@@ -3,6 +3,7 @@ import { TableColumn } from 'typeorm';
 export const STRING_LENGTH = 255;
 export const STRING_SHORT_LENGTH = 64;
 export const STRING_LONG_LENGTH = 512;
+
 export default class Column extends TableColumn {
   static integer(name) {
     return new Column({
