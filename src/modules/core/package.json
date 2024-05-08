@@ -1,7 +1,0 @@
-{
-  "name": "@pressingly/modules-core",
-  "version": "0.0.1",
-  "description": "",
-  "private": true,
-  "packageManager": "pnpm@8.15.5"
-}
