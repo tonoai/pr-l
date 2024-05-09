@@ -2,5 +2,11 @@
   "name": "@pressingly/healthz",
   "version": "0.0.1",
   "private": true,
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@nestjs/common": "^10.0.0"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^10.0.0"
+  }
 }
