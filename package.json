@@ -5,13 +5,23 @@
   "private": true,
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
+    "build": "concurrently pnpm:build:*",
+    "build:core": "nest build core",
+    "build:healthz": "nest build healthz",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"{libraries,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_libs/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json"
+  },
+  "dependencies": {
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "reflect-metadata": "^0.2.0",
+    "rxjs": "^7.8.1",
+    "dotenv": "^16.4.5"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",

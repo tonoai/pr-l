@@ -5,24 +5,21 @@
     "deleteOutDir": true,
     "webpack": false
   },
-  "defaultLibraryPrefix": "@pressingly/portal-libs",
   "projects": {
-    "@pressingly-libs/core": {
+    "core": {
       "type": "library",
-      "root": "core",
-      "entryFile": "index",
-      "sourceRoot": "core",
+      "root": "libs/core",
+      "sourceRoot": "libs/core/src",
       "compilerOptions": {
-        "tsConfigPath": "src/libs/core/tsconfig.lib.json"
+        "tsConfigPath": "libs/core/tsconfig.lib.json"
       }
     },
-    "@pressingly-libs/healthz": {
+    "healthz": {
       "type": "library",
-      "root": "healthz",
-      "entryFile": "index",
-      "sourceRoot": "healthz/src",
+      "root": "libs/healthz",
+      "sourceRoot": "libs/healthz/src",
       "compilerOptions": {
-        "tsConfigPath": "src/libs/healthz/tsconfig.lib.json"
+        "tsConfigPath": "libs/healthz/tsconfig.lib.json"
       }
     }
   }
