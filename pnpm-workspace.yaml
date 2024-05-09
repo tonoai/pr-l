@@ -1,2 +1,4 @@
 packages:
   - 'libraries/*'
+  # this is for testing app only
+  - 'test'
