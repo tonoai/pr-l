@@ -15,7 +15,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_libs/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "changset": "changeset"
+    "changset": "changeset",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "class-transformer": "^0.5.1",
@@ -59,8 +60,8 @@
   },
   "lint-staged": {
     "*.ts": [
-      "pnpm run lint",
-      "pnpm run format"
+      "pnpm lint",
+      "pnpm format"
     ]
   },
   "engines": {
