@@ -1,0 +1,16 @@
+{
+  "name": "@pressingly-modules/core",
+  "version": "0.0.1",
+  "private": true,
+  "description": "",
+  "dependencies": {
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/core": "^10.0.0",
+    "@nestjs/config": "^3.2.1",
+    "@nestjs/typeorm": "^10.0.2",
+    "typeorm": "^0.3.20"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^10.0.0"
+  }
+}

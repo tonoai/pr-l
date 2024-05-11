@@ -1,0 +1,12 @@
+{
+  "name": "@pressingly-modules/healthz",
+  "version": "0.0.1",
+  "private": true,
+  "description": "",
+  "dependencies": {
+    "@nestjs/common": "^10.0.0"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^10.0.0"
+  }
+}

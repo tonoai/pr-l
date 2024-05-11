@@ -1,2 +1,4 @@
 packages:
-  - 'apps/*'
+  - 'modules/*'
+  # this is for testing app only
+  - 'test'
