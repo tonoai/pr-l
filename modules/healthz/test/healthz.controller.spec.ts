@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { HealthzController } from './healthz.controller';
+import { HealthzController } from '../src/healthz.controller';
 
 describe('PublisherPortalController', () => {
   let healthzController: HealthzController;
