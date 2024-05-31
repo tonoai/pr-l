@@ -41,19 +41,31 @@ export class BaseApiService {
     return this.httpService.head(url, config);
   }
 
-  post<T = any>(path: string, data?: any, config?: AxiosRequestConfig): Observable<AxiosResponse<T>> {
+  post<T = any>(
+    path: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Observable<AxiosResponse<T>> {
     const url = this.buildUrl(path);
 
     return this.httpService.post(url, data, config);
   }
 
-  put<T = any>(path: string, data?: any, config?: AxiosRequestConfig): Observable<AxiosResponse<T>> {
+  put<T = any>(
+    path: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Observable<AxiosResponse<T>> {
     const url = this.buildUrl(path);
 
     return this.httpService.put(url, data, config);
   }
 
-  patch<T = any>(path: string, data?: any, config?: AxiosRequestConfig): Observable<AxiosResponse<T>> {
+  patch<T = any>(
+    path: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Observable<AxiosResponse<T>> {
     const url = this.buildUrl(path);
 
     return this.httpService.patch(url, data, config);
