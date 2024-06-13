@@ -1,34 +1,12 @@
 import { TableColumn } from 'typeorm';
+import { TableColumnOptions } from 'typeorm/schema-builder/options/TableColumnOptions';
 
 export const STRING_LENGTH = 255;
 export const STRING_SHORT_LENGTH = 64;
 export const STRING_LONG_LENGTH = 512;
 
 export default class Column extends TableColumn {
-  static integer(name) {
-    return new Column({
-      name,
-      type: 'int',
-    });
-  }
-
-  static email(name = 'email') {
-    return new Column({
-      name,
-      type: 'varchar',
-      length: STRING_LENGTH.toString(),
-    });
-  }
-
-  static phone(name = 'phone') {
-    return new Column({
-      name,
-      type: 'varchar',
-      length: STRING_SHORT_LENGTH.toString(),
-    });
-  }
-
-  static increments(name) {
+  static increments(name: string) {
     return new Column({
       name,
       type: 'int',
@@ -39,84 +17,81 @@ export default class Column extends TableColumn {
     });
   }
 
-  static bigInt(name) {
+  static int(name: string, options?: TableColumnOptions) {
+    return new Column({
+      name,
+      type: 'int',
+      ...options,
+    });
+  }
+
+  static bigInt(name: string, options?: TableColumnOptions) {
     return new Column({
       name,
       type: 'bigint',
-      isPrimary: true,
-      unsigned: true,
-      isGenerated: true,
-      generationStrategy: 'increment',
+      ...options,
     });
   }
 
-  static unsigned(name) {
+  static smallInt(name: string, options?: TableColumnOptions) {
     return new Column({
       name,
-      type: 'int',
-      unsigned: true,
+      type: 'smallint',
+      ...options,
     });
   }
 
-  static float(name) {
+  static float(name: string, options?: TableColumnOptions) {
     return new Column({
       name,
       type: 'float',
+      ...options,
     });
   }
 
-  static boolean(name: string, defaultValue?: boolean) {
+  static boolean(name: string, options?: TableColumnOptions) {
     return new Column({
       name,
       type: 'bool',
-      default: defaultValue,
+      ...options,
     });
   }
 
-  static text(name) {
+  static text(name: string, options?: TableColumnOptions) {
     return new Column({
       name,
       type: 'text',
+      ...options,
     });
   }
 
-  static any(name) {
-    return new Column({
-      name,
-      type: 'text',
-    });
-  }
-
-  static longText(name) {
+  static longText(name: string, options?: TableColumnOptions) {
     return new Column({
       name,
       type: 'longtext',
+      ...options,
     });
   }
 
-  static string(name, length = STRING_LENGTH) {
+  static string(name: string, length = STRING_LENGTH, options?: TableColumnOptions) {
     return new Column({
       name,
       type: 'varchar',
       length: length.toString(),
+      ...options,
     });
   }
 
-  static enum(name: string, values: any) {
+  static enum(name: string, values: string[], options?: TableColumnOptions) {
     return new Column({
       name,
       type: 'enum',
-      enum: Object.values(values),
+      enum: values,
+      ...options,
     });
   }
 
-  static status(name: string, values: string[], defaultValue?: string) {
-    const column = Column.enum(name, values);
-
-    return defaultValue ? column.setDefault(defaultValue) : column;
-  }
-
-  static uuid(name = 'uuid') {
+  static uuid(name: string = 'uuid') {
     return new Column({
       name,
       type: 'uuid',
@@ -125,90 +100,71 @@ export default class Column extends TableColumn {
     });
   }
 
-  static version(name = 'version') {
-    return new Column({
-      name,
-      type: 'int',
-    });
-  }
-
-  static json(name: string) {
+  static json(name: string, options?: TableColumnOptions) {
     return new Column({
       name,
       type: 'json',
+      ...options,
     });
   }
 
-  static jsonb(name: string) {
+  static jsonb(name: string, options?: TableColumnOptions) {
     return new Column({
       name,
       type: 'jsonb',
+      ...options,
     });
   }
 
-  static array(name: string) {
+  static array(name: string, options?: TableColumnOptions) {
     return new Column({
       name,
       type: 'text',
       isArray: true,
+      ...options,
     });
   }
 
-  static timestamp(name) {
+  static timestamp(name: string, options?: TableColumnOptions) {
     return new Column({
       name,
       type: 'timestamp',
+      ...options,
     });
   }
 
-  static date(name) {
+  static date(name: string, options?: TableColumnOptions) {
     return new Column({
       name,
       type: 'date',
+      ...options,
     });
   }
 
-  static time(name) {
+  static time(name: string, options?: TableColumnOptions) {
     return new Column({
       name,
       type: 'time',
+      ...options,
     });
   }
 
-  static money(name) {
+  static money(name: string, options?: TableColumnOptions) {
     return new Column({
       name,
       type: 'decimal',
       precision: 12,
       scale: 2,
       unsigned: true,
+      ...options,
     });
   }
 
-  static virtual(name, express: string) {
-    return new Column({
-      name,
-      type: 'json',
-      asExpression: express,
-      generatedType: 'VIRTUAL',
-      isGenerated: true,
-      generationStrategy: undefined,
-    });
-  }
-
-  static percentage(name) {
-    return new Column({
-      name,
-      type: 'decimal',
-      precision: 3,
-      scale: 2,
-    });
-  }
-
-  static point(name) {
+  static point(name: string, options?: TableColumnOptions) {
     return new Column({
       name,
       type: 'point',
+      ...options,
     });
   }
 
@@ -224,7 +180,7 @@ export default class Column extends TableColumn {
     return this;
   }
 
-  setDefault(value) {
+  setDefault(value: any) {
     this.default = typeof value === 'string' ? `'${value}'` : value;
 
     return this;

@@ -1,6 +1,8 @@
 import {
   AfterLoad,
   BaseEntity as TypeOrmBaseEntity,
+  BeforeInsert,
+  BeforeUpdate,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -10,13 +12,22 @@ export default class BaseEntity extends TypeOrmBaseEntity {
   @Exclude({ toPlainOnly: true })
   private origin!: Record<string, any>;
 
-  id!: string;
-
-  @CreateDateColumn({ select: false })
+  @CreateDateColumn()
   createdAt!: Date;
 
-  @UpdateDateColumn({ select: false })
+  @UpdateDateColumn()
   updatedAt!: Date;
+
+  @BeforeInsert()
+  setCreateDate(): void {
+    this.createdAt = new Date();
+    this.updatedAt = new Date();
+  }
+
+  @BeforeUpdate()
+  setUpdateDate(): void {
+    this.updatedAt = new Date();
+  }
 
   @AfterLoad()
   setOrigin() {

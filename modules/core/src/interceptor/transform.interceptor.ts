@@ -13,7 +13,7 @@ export interface Response<T> {
 
 @Injectable()
 export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> {
-  static formatResponse(response) {
+  formatResponse(response) {
     return {
       statusCode: response?.statusCode ?? 200,
       message: response?.message,
@@ -21,7 +21,7 @@ export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> 
     };
   }
 
-  static instanceToPlain(response) {
+  instanceToPlain(response) {
     try {
       if (response?.data && !(response.data instanceof ServerResponse)) {
         response.data = instanceToPlain(response.data);
@@ -42,8 +42,8 @@ export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> 
     }
 
     return next.handle().pipe(
-      map(response => TransformInterceptor.formatResponse(response)),
-      map(response => TransformInterceptor.instanceToPlain(response)),
+      map(response => this.formatResponse(response)),
+      map(response => this.instanceToPlain(response)),
     );
   }
 }
