@@ -1,7 +1,7 @@
 import { IsInt, IsOptional, Min } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { PAGINATION_ARGS } from '../const/pagination-args';
-import { BaseSearchDto } from '../../base/base-search-dto';
+import { BaseSearchDto } from '../../base/base-search.dto';
 
 export class PaginationDto extends BaseSearchDto {
   @IsInt()
