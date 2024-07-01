@@ -4,6 +4,7 @@ import { ValidationError } from 'class-validator';
 import { ConfigService } from '@nestjs/config';
 import { ErrorCodeService } from '../exception/error-code.service';
 import { IncomingMessage } from 'http';
+import { EntityNotFoundError } from 'typeorm';
 
 export interface FormattedResponse {
   statusCode: any;
@@ -51,7 +52,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
       // only errorCode
       return ErrorCodeService.getError(errors['message']) ?? errors['message'];
     } else if (typeof errors === 'object' && errors['statusCode'] && errors['message']) {
-      // this error come from validation
+      // these errors come from validation
       return AllExceptionsFilter.formatValidationsMessages(errors['message']);
     } else {
       return errors;
@@ -61,6 +62,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
     const isDebug = this.config.get('app.debug');
     const response = host.switchToHttp().getResponse();
+
     let formattedResponse: FormattedResponse;
     if (exception instanceof HttpException) {
       const formatErrors = AllExceptionsFilter.format(exception);
@@ -73,6 +75,12 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
         errorCode: formatErrors['errorCode'],
       };
 
+      this.logHandledError(exception, host);
+    } else if (exception instanceof EntityNotFoundError) {
+      formattedResponse = {
+        statusCode: HttpStatus.NOT_FOUND,
+        error: 'Not Found',
+      };
       this.logHandledError(exception, host);
     } else {
       this.logUnknownError(exception, host);
