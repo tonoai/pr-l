@@ -16,7 +16,6 @@ export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> 
   formatResponse(response) {
     return {
       statusCode: response?.statusCode ?? 200,
-      message: response?.message,
       data: response?.statusCode ? response.data : response?.data ?? response,
     };
   }

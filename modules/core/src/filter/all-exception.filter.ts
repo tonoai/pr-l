@@ -68,11 +68,8 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
       const formatErrors = AllExceptionsFilter.format(exception);
       formattedResponse = {
         statusCode: exception.getStatus(),
-        error: formatErrors['errorCode']
-          ? { [formatErrors['errorCode']]: formatErrors['message'] }
-          : formatErrors,
-        message: formatErrors['message'],
-        errorCode: formatErrors['errorCode'],
+        error: formatErrors['errorCode'] ? formatErrors['message'] : formatErrors,
+        errorCode: formatErrors['errorCode'] ?? HttpStatus[exception.getStatus()],
       };
 
       this.logHandledError(exception, host);

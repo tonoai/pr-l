@@ -39,4 +39,8 @@ export default class BaseEntity extends TypeOrmBaseEntity {
   getOrigin(): Record<string, any> {
     return this.origin;
   }
+
+  toJSON(): Record<string, any> {
+    return instanceToPlain(this);
+  }
 }
