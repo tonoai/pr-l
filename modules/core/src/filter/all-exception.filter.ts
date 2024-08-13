@@ -1,4 +1,4 @@
-import { ArgumentsHost, Catch, HttpException, HttpStatus } from '@nestjs/common';
+import { ArgumentsHost, Catch, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 import { ValidationError } from 'class-validator';
 import { ConfigService } from '@nestjs/config';
@@ -78,7 +78,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
         statusCode: HttpStatus.NOT_FOUND,
         error: 'Not Found',
       };
-      this.logHandledError(exception, host);
+      Logger.warn(exception.message, `404 HTTP NOT FOUND `);
     } else {
       this.logUnknownError(exception, host);
       formattedResponse = {
@@ -98,7 +98,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     const errorMessage = exception instanceof Error ? exception.message : '';
     const method = request instanceof IncomingMessage ? request.method : '';
 
-    console.error(`[${method}] [${request.url}] ${errorMessage}`, exception, {
+    Logger.error(`[${method}] [${request.url}] ${errorMessage}`, exception, {
       name: 'REQUEST_ERROR',
       user: request.user,
     });
@@ -108,8 +108,6 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     const request = host.switchToHttp().getRequest();
     const method = request instanceof IncomingMessage ? request.method : '';
 
-    if (exception.getStatus() !== HttpStatus.NOT_FOUND) {
-      console.warn(`${method}  ${request.url}`, `[${exception.getStatus()}] HTTP Bad Request `);
-    }
+    Logger.warn(`${method}  ${request.url}`, `${exception?.getStatus()} HTTP Bad Request `);
   }
 }
