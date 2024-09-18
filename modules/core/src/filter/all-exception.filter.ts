@@ -60,6 +60,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
   }
 
   catch(exception: any, host: ArgumentsHost) {
+    console.log(22);
     const isDebug = this.config.get('app.debug');
     const response = host.switchToHttp().getResponse();
 
@@ -102,6 +103,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
       name: 'REQUEST_ERROR',
       user: request.user,
     });
+    console.error(exception);
   }
 
   logHandledError(exception, host) {
