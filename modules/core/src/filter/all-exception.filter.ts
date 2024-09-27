@@ -1,10 +1,11 @@
-import { ArgumentsHost, Catch, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import { ArgumentsHost, Catch, HttpException, HttpStatus } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 import { ValidationError } from 'class-validator';
 import { ConfigService } from '@nestjs/config';
 import { ErrorCodeService } from '../exception/error-code.service';
 import { IncomingMessage } from 'http';
 import { EntityNotFoundError } from 'typeorm';
+import { Logger } from '../logger/logger';
 
 export interface FormattedResponse {
   statusCode: any;
@@ -15,7 +16,10 @@ export interface FormattedResponse {
 
 @Catch()
 export class AllExceptionsFilter extends BaseExceptionFilter {
-  constructor(private readonly config: ConfigService) {
+  constructor(
+    private readonly config: ConfigService,
+    private logger: Logger,
+  ) {
     super();
   }
 
@@ -79,7 +83,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
         statusCode: HttpStatus.NOT_FOUND,
         error: 'Not Found',
       };
-      Logger.warn(exception.message, `404 HTTP NOT FOUND `);
+      this.logHandledError(exception, host);
     } else {
       this.logUnknownError(exception, host);
       formattedResponse = {
@@ -99,17 +103,20 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     const errorMessage = exception instanceof Error ? exception.message : '';
     const method = request instanceof IncomingMessage ? request.method : '';
 
-    Logger.error(`[${method}] [${request.url}] ${errorMessage}`, exception, {
-      name: 'REQUEST_ERROR',
-      user: request.user,
-    });
-    console.error(exception);
+    this.logger.error(
+      exception,
+      {
+        name: 'REQUEST_ERROR',
+        user: request.user,
+      },
+      `[${method}] [${request.url}] ${errorMessage}`,
+    );
   }
 
   logHandledError(exception, host) {
     const request = host.switchToHttp().getRequest();
     const method = request instanceof IncomingMessage ? request.method : '';
 
-    Logger.warn(`${method}  ${request.url}`, `${exception?.getStatus()} HTTP Bad Request `);
+    this.logger.warn(exception, `[${exception.getStatus()}] ${method}  ${request.url}`);
   }
 }
