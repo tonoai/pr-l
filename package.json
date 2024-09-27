@@ -18,11 +18,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@sentry/nestjs": "^8.32.0",
+    "@sentry/profiling-node": "^8.32.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "dotenv": "^16.4.5",
     "reflect-metadata": "^0.2.0",
-    "rxjs": "^7.8.1",
-    "dotenv": "^16.4.5"
+    "rxjs": "^7.8.1"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
