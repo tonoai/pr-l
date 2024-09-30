@@ -64,7 +64,6 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
   }
 
   catch(exception: any, host: ArgumentsHost) {
-    console.log(22);
     const isDebug = this.config.get('app.debug');
     const response = host.switchToHttp().getResponse();
 
@@ -114,9 +113,13 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
   }
 
   logHandledError(exception, host) {
+    // only 2 types of handled errors for now: HttpException and EntityNotFoundError
     const request = host.switchToHttp().getRequest();
     const method = request instanceof IncomingMessage ? request.method : '';
 
-    this.logger.warn(exception, `[${exception.getStatus()}] ${method}  ${request.url}`);
+    this.logger.warn(
+      exception,
+      `[${exception.getStatus ? exception.getStatus() : exception.name}] ${method}  ${request.url}`,
+    );
   }
 }
