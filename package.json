@@ -8,6 +8,7 @@
     "build": "concurrently pnpm:build:*",
     "build:core": "nest build core",
     "build:healthz": "nest build healthz",
+    "build:reconciliation": "nest build reconciliation",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"modules/**/*.ts\"",
     "lint": "eslint \"modules/**/*.ts\" --fix",
     "test": "jest --detectOpenHandles --logHeapUsage",
@@ -20,6 +21,7 @@
   "dependencies": {
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "dayjs": "^1.11.13",
     "dotenv": "^16.4.5",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"
