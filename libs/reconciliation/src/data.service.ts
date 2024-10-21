@@ -98,7 +98,7 @@ export class DataService {
     return this;
   }
 
-  async getEncryptedData(): Promise<{
+  async encryptAllData(): Promise<{
     encryptedSubscriptionChargeDataSet: string;
     encryptedNewDisputeDataSet: string;
     encryptedFinalizedDisputeDataSet: string;
