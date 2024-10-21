@@ -13,7 +13,7 @@ import { DataBuilderInterface } from './types/data-builder.interface';
 
 export interface DataServiceConfigs {
   dataBuilder: DataBuilderInterface;
-  key: PrinvateKeyInterface;
+  myKey: PrinvateKeyInterface;
   partnerKey: PublicKeyInterface;
   date: Date;
   partnerId: string;
@@ -47,7 +47,7 @@ export class DataService {
 
   constructor(configs: DataServiceConfigs) {
     this.dataBuilder = configs.dataBuilder;
-    this.myKey = configs.key;
+    this.myKey = configs.myKey;
     this.partnerKey = configs.partnerKey;
     this.date = configs.date;
     this.partnerId = configs.partnerId;

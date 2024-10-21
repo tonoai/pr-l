@@ -22,12 +22,19 @@ export class RequestService {
     this.partnerId = configs.partnerId;
   }
 
-  async upload(data: any): Promise<string> {
-    return this.requestBuilder.upload(data, this.partnerId, this.date);
+  async upload(data: any): Promise<void> {
+    const uploadLink = await this.requestBuilder.getUploadLink(data, this.partnerId, this.date);
+    // Todo: upload data to uploadLink
   }
 
-  async download(): Promise<any> {
-    return this.requestBuilder.download(this.myId, this.date);
+  async download(): Promise<{ data: any; kid: string }> {
+    const { downloadUrl, kid } = await this.requestBuilder.getDownloadInfo(this.myId, this.date);
+    // Todo: download data from downloadUrl
+    // return downloaded data (encrypted) and kid to decrypt
+
+    // Todo: publisher and membership only use one key for now
+    // so the return kid must be the same as publisher kid/ membership kid
+    return { data: downloadUrl, kid };
   }
 
   send(event: DailyReconciliationRequestEvent | DailyReconciliationResponseEvent): Promise<void> {

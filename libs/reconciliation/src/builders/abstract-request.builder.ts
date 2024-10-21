@@ -8,10 +8,10 @@ export interface RequestBuilderConfigs {
   partnerId: string;
 }
 export abstract class AbstractRequestBuilder implements RequestBuilderInterface {
-  abstract upload(file: any, partnerId: string, date: Date): Promise<string>;
-  abstract download(partnerId: string, date: Date): Promise<any>;
+  abstract getUploadLink(file: any, partnerId: string, date: Date): Promise<string>;
+  abstract getDownloadInfo(partnerId: string, date: Date): Promise<any>;
   abstract send(
     event: DailyReconciliationRequestEvent | DailyReconciliationResponseEvent,
   ): Promise<void>;
-  abstract getPublicKeyByKid(kid: string): Promise<PublicKeyInterface>;
+  abstract getFirstPublicKeyByProjectId(kid: string): Promise<PublicKeyInterface>;
 }

@@ -42,7 +42,7 @@ export class RequestReconciliationService {
     this.maxRetry = configs.maxRetry ?? 1;
     this.dataService = new DataService({
       dataBuilder: configs.dataBuilder,
-      key: this.myKey,
+      myKey: this.myKey,
       partnerKey: this.partnerKey,
       date: this.date,
       partnerId: this.partnerId,

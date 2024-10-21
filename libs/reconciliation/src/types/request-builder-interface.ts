@@ -3,8 +3,8 @@ import { DailyReconciliationRequestEvent } from '../events/daily-reconciliation-
 import { DailyReconciliationResponseEvent } from '../events/daily-reconciliation-response.event';
 
 export interface RequestBuilderInterface {
-  upload(file: any, partnerId: string, date: Date): Promise<string>; // upload link
-  download(partnerId: string, date: Date): Promise<any>; // zip file
+  getUploadLink(file: any, partnerId: string, date: Date): Promise<string>;
+  getDownloadInfo(partnerId: string, date: Date): Promise<{ downloadUrl: string; kid: string }>;
   send(event: DailyReconciliationRequestEvent | DailyReconciliationResponseEvent): Promise<void>;
-  getPublicKeyByKid(kid: string): Promise<PublicKeyInterface>;
+  getFirstPublicKeyByProjectId(kid: string): Promise<PublicKeyInterface>;
 }

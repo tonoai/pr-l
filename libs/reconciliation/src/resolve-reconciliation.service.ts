@@ -15,6 +15,7 @@ export interface ResolveReconciliationServiceConfigs {
   dataBuilder: DataBuilderInterface;
   requestBuilder: RequestBuilderInterface;
   myKey: PrinvateKeyInterface;
+  // Todo: move this input to this service
   partnerKey: PublicKeyInterface;
   partnerId: string;
   requestContract: RawContract;
@@ -39,7 +40,7 @@ export class ResolveReconciliationService {
     this.partnerKey = configs.partnerKey;
     this.dataService = new DataService({
       dataBuilder: configs.dataBuilder,
-      key: this.myKey,
+      myKey: this.myKey,
       partnerKey: this.partnerKey,
       date: this.date,
       partnerId: this.partnerId,
@@ -72,7 +73,11 @@ export class ResolveReconciliationService {
       });
     }
     // download data from partner
-    const data = await this.requestService.download();
+    const { data, kid } = await this.requestService.download();
+    if (kid !== this.myKey.kid) {
+      // for now only use one key for publisher and membership
+      throw new Error('Invalid encrypted kid');
+    }
     // decrypt data and inject to service
     await this.dataService.loadPartnerData(data);
     // build own data
