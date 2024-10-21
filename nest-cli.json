@@ -24,11 +24,11 @@
     },
     "reconciliation": {
       "type": "library",
-      "root": "libs/reconciliation",
+      "root": "modules/reconciliation",
       "entryFile": "index",
-      "sourceRoot": "libs/reconciliation/src",
+      "sourceRoot": "modules/reconciliation/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/reconciliation/tsconfig.lib.json"
+        "tsConfigPath": "modules/reconciliation/tsconfig.lib.json"
       }
     }
   }
