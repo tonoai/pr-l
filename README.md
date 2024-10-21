@@ -12,7 +12,7 @@ The libraries in this repository follow a workspace structure, allowing code sha
 Each library contains the following key configuration files:
 
 1. **package.json**
-   - `name`: Uses the format `@pressingly-libs/library-name`.
+   - `name`: Uses the format `@pressingly-modules/library-name`.
    - `version`: Initial version set to `0.0.1`.
    - `description`: A short description outlining the library's purpose.
    - `dependencies`: includes both root dependencies and any specific dependencies required by the library.
