@@ -8,18 +8,18 @@
   "projects": {
     "core": {
       "type": "library",
-      "root": "libs/core",
-      "sourceRoot": "libs/core/src",
+      "root": "modules/core",
+      "sourceRoot": "modules/core/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/core/tsconfig.lib.json"
+        "tsConfigPath": "modules/core/tsconfig.lib.json"
       }
     },
     "healthz": {
       "type": "library",
-      "root": "libs/healthz",
-      "sourceRoot": "libs/healthz/src",
+      "root": "modules/healthz",
+      "sourceRoot": "modules/healthz/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/healthz/tsconfig.lib.json"
+        "tsConfigPath": "modules/healthz/tsconfig.lib.json"
       }
     }
   }
