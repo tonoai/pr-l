@@ -9,7 +9,7 @@
     "build:core": "nest build core",
     "build:healthz": "nest build healthz",
     "build:reconciliation": "nest build reconciliation",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"modules/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\" \"modules/**/*.ts\"",
     "lint": "eslint \"modules/**/*.ts\" --fix",
     "test": "jest --detectOpenHandles --logHeapUsage",
     "test:watch": "jest --watch --detectOpenHandles --logHeapUsage",
