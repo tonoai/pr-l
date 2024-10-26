@@ -1,0 +1,12 @@
+{
+  "name": "@pressingly-modules/event-contract",
+  "version": "0.0.1",
+  "private": true,
+  "description": "",
+  "dependencies": {
+    "jose": "^5.4.0",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+  }
+}
