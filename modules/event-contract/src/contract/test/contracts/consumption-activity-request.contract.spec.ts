@@ -2,9 +2,7 @@ import { plainToInstance } from 'class-transformer';
 import { v4 as uuidv4 } from 'uuid';
 import { generateKeyPairSync } from 'crypto';
 import type { JWSHeaderParameters } from 'jose';
-// eslint-disable-next-line max-len
 import { ConsumptionActivityRequestContract } from '../../contracts/dispute/consumtion-activity-request.contract';
-// eslint-disable-next-line max-len
 import { ConsumptionActivityRequestContractPayload } from '../../contracts/dispute/consumption-activity-request.contract-payload';
 
 describe('ConsumptionActivityRequestContract', () => {

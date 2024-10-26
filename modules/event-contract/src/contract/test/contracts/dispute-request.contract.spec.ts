@@ -1,7 +1,6 @@
 import { plainToInstance } from 'class-transformer';
 import { v4 as uuidv4 } from 'uuid';
 import { DisputeRequestContract } from '../../contracts/dispute/dispute-request.contract';
-// eslint-disable-next-line max-len
 import { DisputeRequestContractPayload } from '../../contracts/dispute/dispute-request.contract-payload';
 
 describe('DisputeRequestContract', () => {

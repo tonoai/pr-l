@@ -1,6 +1,4 @@
-// eslint-disable-next-line max-len
 import type { CreateSubscriptionChargeContractPayload } from './create-subscription-charge.contract-payload';
-// eslint-disable-next-line max-len
 import type { FinalizeSubscriptionChargeContractPayload } from './finalize-subscription-charge.contract-payload';
 import { BaseEncryptedContract } from '../../base-encrypted.contract';
 

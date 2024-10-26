@@ -1,4 +1,3 @@
-// eslint-disable-next-line max-len
 import { CreateSubscriptionChargeContractPayload } from './create-subscription-charge.contract-payload';
 
 // eslint-disable-next-line max-len
