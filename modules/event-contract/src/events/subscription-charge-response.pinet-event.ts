@@ -1,7 +1,7 @@
 import { PinetEvent } from './pinet-event';
 import type { SubscriptionChargePinetEventPayload } from './subscription-charge-request.pinet-event';
 import { v4 as uuidv4 } from 'uuid';
-import { EVENT_SUBSCRIPTION_CHARGE_RESPONSE } from '../contract/const/event-types';
+import { EVENT_SUBSCRIPTION_CHARGE_RESPONSE } from './const/event-types';
 
 // eslint-disable-next-line max-len
 export class SubscriptionChargeResponsePinetEvent extends PinetEvent<SubscriptionChargePinetEventPayload> {
