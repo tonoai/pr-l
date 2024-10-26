@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { ContractPinetEventPayload, PinetEvent } from './pinet-event';
-import { EVENT_CONSUMPTION_ACTIVITY_RESPONSE } from '../contract/const/event-types';
+import { EVENT_CONSUMPTION_ACTIVITY_RESPONSE } from './const/event-types';
 
 export class ConsumptionActivityResponseEventPayload extends ContractPinetEventPayload {}
 
