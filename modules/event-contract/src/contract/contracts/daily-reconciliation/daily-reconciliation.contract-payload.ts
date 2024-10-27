@@ -1,7 +1,7 @@
 import { IsISO8601, IsNotEmpty, IsNumber, IsString, ValidateNested } from 'class-validator';
 import type { JWSHeaderParameters } from 'jose';
 import { Type } from 'class-transformer';
-import { BaseContractPayload } from './base.contract-payload';
+import { BaseContractPayload } from '@pressingly-modules/event-contract/src/contract/base.contract-payload';
 
 export class Stats {
   @IsNumber()

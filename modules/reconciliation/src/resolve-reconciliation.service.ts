@@ -4,12 +4,12 @@ import { DataService } from './data.service';
 import { DataBuilderInterface } from './types/data-builder.interface';
 import { RequestBuilderInterface } from './types/request-builder-interface';
 import { RawContract } from './events/base-event';
-import { DailyReconciliationContract } from './contracts/daily-reconciliation.contract';
+import { DailyReconciliationContract } from '@pressingly-modules/event-contract/src/contract/contracts/daily-reconciliation/daily-reconciliation.contract';
 import {
   DailyReconciliationContractPayload,
   DailyReconciliationResponseProtectedHeader,
-} from './contracts/daily-reconciliation.contract-payload';
-import { DailyReconciliationResponseEvent } from './events/daily-reconciliation-response.event';
+} from '@pressingly-modules/event-contract/src/contract/contracts/daily-reconciliation/daily-reconciliation.contract-payload';
+import { DailyReconciliationResponseEvent } from '../../event-contract/src/events/daily-reconciliation-response.event';
 
 export interface ResolveReconciliationServiceConfigs {
   dataBuilder: DataBuilderInterface;

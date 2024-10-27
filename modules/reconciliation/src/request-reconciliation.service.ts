@@ -2,11 +2,11 @@ import { DataService } from './data.service';
 import { RequestService } from './request.service';
 import { DataBuilderInterface } from './types/data-builder.interface';
 import { RequestBuilderInterface } from './types/request-builder-interface';
-import { DailyReconciliationContract } from './contracts/daily-reconciliation.contract';
+import { DailyReconciliationContract } from '@pressingly-modules/event-contract/src/contract/contracts/daily-reconciliation/daily-reconciliation.contract';
 // eslint-disable-next-line max-len
-import { DailyReconciliationContractPayload } from './contracts/daily-reconciliation.contract-payload';
+import { DailyReconciliationContractPayload } from '@pressingly-modules/event-contract/src/contract/contracts/daily-reconciliation/daily-reconciliation.contract-payload';
 import { v4 as uuidv4 } from 'uuid';
-import { DailyReconciliationRequestEvent } from './events/daily-reconciliation-request.event';
+import { DailyReconciliationRequestEvent } from '../../event-contract/src/events/daily-reconciliation-request.event';
 import { PrinvateKeyInterface, PublicKeyInterface } from './types/key.interface';
 
 export interface RequestReconciliationServiceConfigs {

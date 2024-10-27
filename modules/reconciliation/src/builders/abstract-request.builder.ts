@@ -1,7 +1,7 @@
 import { DownloadInfoInterface, RequestBuilderInterface } from '../types/request-builder-interface';
-import { DailyReconciliationRequestEvent } from '../events/daily-reconciliation-request.event';
-import { DailyReconciliationResponseEvent } from '../events/daily-reconciliation-response.event';
 import { PublicKeyInterface } from '../types/key.interface';
+import { DailyReconciliationRequestEvent } from '@pressingly-modules/event-contract/src/events/daily-reconciliation-request.event';
+import { DailyReconciliationResponseEvent } from '@pressingly-modules/event-contract/src/events/daily-reconciliation-response.event';
 
 export interface RequestBuilderConfigs {
   date: Date;

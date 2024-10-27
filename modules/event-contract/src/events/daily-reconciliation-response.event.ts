@@ -1,8 +1,10 @@
+import {
+  ContractPinetEventPayload,
+  PinetEvent,
+} from '@pressingly-modules/event-contract/src/events/pinet-event';
 import { v4 as uuidv4 } from 'uuid';
-import { BaseEvent, ContractEventPayload } from './base-event';
 
-// Todo:should use base event from npm package
-export class DailyReconciliationResponseEvent extends BaseEvent<ContractEventPayload> {
+export class DailyReconciliationResponseEvent extends PinetEvent<ContractPinetEventPayload> {
   constructor(event?: Partial<DailyReconciliationResponseEvent>) {
     super(event);
     if (!this.header) {

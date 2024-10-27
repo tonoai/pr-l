@@ -1,6 +1,6 @@
 import { PublicKeyInterface } from './key.interface';
-import { DailyReconciliationRequestEvent } from '../events/daily-reconciliation-request.event';
-import { DailyReconciliationResponseEvent } from '../events/daily-reconciliation-response.event';
+import { DailyReconciliationRequestEvent } from '../../../event-contract/src/events/daily-reconciliation-request.event';
+import { DailyReconciliationResponseEvent } from '../../../event-contract/src/events/daily-reconciliation-response.event';
 
 export interface DownloadInfoInterface {
   downloadUrl: string;
