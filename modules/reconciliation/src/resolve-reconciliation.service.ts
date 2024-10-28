@@ -3,22 +3,22 @@ import { RequestService } from './request.service';
 import { DataService } from './data.service';
 import { DataBuilderInterface } from './types/data-builder.interface';
 import { RequestBuilderInterface } from './types/request-builder-interface';
-import { RawContract } from './events/base-event';
 import { DailyReconciliationContract } from '@pressingly-modules/event-contract/src/contract/contracts/daily-reconciliation/daily-reconciliation.contract';
 import {
   DailyReconciliationContractPayload,
   DailyReconciliationResponseProtectedHeader,
 } from '@pressingly-modules/event-contract/src/contract/contracts/daily-reconciliation/daily-reconciliation.contract-payload';
 import { DailyReconciliationResponseEvent } from '../../event-contract/src/events/daily-reconciliation-response.event';
+import { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
+import { DailyReconciliationContractStatus } from '@pressingly-modules/event-contract/src/contract/const/daily-reconciliation-contract-status';
 
 export interface ResolveReconciliationServiceConfigs {
   dataBuilder: DataBuilderInterface;
   requestBuilder: RequestBuilderInterface;
   myKey: PrinvateKeyInterface;
-  // Todo: move this input to this service
   partnerKey: PublicKeyInterface;
   partnerId: string;
-  requestContract: RawContract;
+  requestContract: PinetContract;
   myId: string;
   date?: Date;
 }
@@ -50,21 +50,25 @@ export class ResolveReconciliationService {
       date: this.date,
       myId: this.myId,
       partnerId: this.partnerId,
+      partnerKid: this.partnerKey.kid,
     });
     this.requestContract = new DailyReconciliationContract().fromJWS(configs.requestContract);
-    // Todo: should handle request event here or only contract?
   }
 
   async execute() {
-    // validate event or contract
-    // failed - return fail with error
-    // Todo: update contract to verify some signature (not all)
-    // because the contract still not have all signatures
+    const reconciliationEntity = await this.dataService.dataBuilder.createReconciliationRecord({
+      id: this.requestContract.getPayload().contractId,
+      date: this.date,
+      partnerId: this.partnerId,
+      status: 'pending',
+      contract: this.requestContract.data,
+    });
     try {
-      await this.requestContract.transformAndValidate(
-        DailyReconciliationContractPayload,
-        this.requestService.getPublicKeyByKid,
-      );
+      await this.requestContract.transformAndValidate(DailyReconciliationContractPayload);
+      await this.requestContract.verifySomeSignatures(2, [
+        this.requestService.requestBuilder.getPublicKey,
+        this.requestService.requestBuilder.getPinetCorePublicKey,
+      ]);
     } catch (err) {
       return this.signContractAndSendEvent({
         status: 'failed',
@@ -73,41 +77,66 @@ export class ResolveReconciliationService {
       });
     }
     // download data from partner
-    const { data, kid } = await this.requestService.download();
-    if (kid !== this.myKey.kid) {
-      // for now only use one key for publisher and membership
-      throw new Error('Invalid encrypted kid');
+    const { encryptedPartnerData, kid } = await this.requestService.download();
+    if (!encryptedPartnerData || !kid) {
+      return this.signContractAndSendEvent({
+        status: DailyReconciliationContractStatus.FAILED,
+        message: 'Failed to download partner data',
+      });
     }
-    // decrypt data and inject to service
-    await this.dataService.loadPartnerData(data);
-    // build own data
+    try {
+      // decrypt data and inject to service
+      await this.dataService.loadPartnerData(encryptedPartnerData, kid);
+    } catch (err) {
+      // TOdo: store the reconciliation record with failed status
+      return this.signContractAndSendEvent({
+        status: DailyReconciliationContractStatus.FAILED,
+        message: err,
+      });
+    }
+    // TOdo, upload data after resolve conflict
     await this.dataService.loadOwnData();
-    if (this.dataService.compareData()) {
+    const encryptedOwnData = await this.dataService.encryptOwnData();
+    // upload data to s3 via monetaService
+    await this.requestService.upload(encryptedOwnData);
+
+    // build own data
+    if (!this.dataService.compareData()) {
       // resolve conflict, automatically or manually, for now only automatically
       // Todo: should break the process and wait for user action if manually
       // after resolve, should update own data if needed (in another resolving process)
       // reinit RequestReconciliationService, then call execute => compareData should be true
       // if compareData not true, should resolve conflict manually again
       const isResolvedConflict = await this.dataService.resolveConflict();
-      if (!isResolvedConflict) {
+      if (isResolvedConflict) {
+        // TOdo: what happen if conflict resolve?
+        // send contract with status resolved?
+        // but partner data is not updated yet
+        // and partner may not allow to update their data
         return;
+      } else {
+        return this.signContractAndSendEvent({
+          status: DailyReconciliationContractStatus.FAILED,
+          message: 'Data conflict',
+        });
       }
     }
-    // upload data to s3 via monetaService
-    await this.requestService.upload(data);
 
     return this.signContractAndSendEvent({
-      status: 'reconciled',
+      status: DailyReconciliationContractStatus.RECONCILED,
     });
   }
 
   private async signContractAndSendEvent(
     protectedHeader: DailyReconciliationResponseProtectedHeader,
   ) {
-    // Todo create reconciliation record with contracts data
-    // await this.dataService.createReconciliationRecord();
     await this.requestContract.sign(this.myKey.privateKey, protectedHeader, {
       kid: this.myKey.kid,
+    });
+    await this.dataService.dataBuilder.updateReconciliationRecord({
+      id: this.requestContract.getPayload().contractId,
+      status: protectedHeader.status,
+      contract: this.requestContract.data,
     });
 
     // init moneta event with contracts data
@@ -117,6 +146,11 @@ export class ResolveReconciliationService {
       },
     });
     // send reconciliation request to monetaService
-    await this.requestService.send(event);
+    const sendEventRes = await this.requestService.send(event);
+    await this.dataService.dataBuilder.updateReconciliationRecord({
+      id: this.requestContract.getPayload().contractId,
+      status: protectedHeader.status,
+      contract: sendEventRes.contract,
+    });
   }
 }

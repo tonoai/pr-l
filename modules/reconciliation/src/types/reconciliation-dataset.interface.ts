@@ -9,12 +9,14 @@ export interface SubscriptionChargeDatasetInterface {
 }
 
 export interface NewDisputeDatasetInterface {
+  // Todo: This data cannot re-exported
   contractId: string;
   contract: string;
   issuedAt: number;
 }
 
 export interface FinalizedDisputeDatasetInterface {
+  // Todo: same contract as NewDisputeDatasetInterface if same day
   contractId: string;
   resolvedAt: number;
   contract: string;
@@ -37,6 +39,13 @@ export interface ReconciliationDatasetInterface {
   newDisputeDataset: NewDisputeDatasetInterface[];
   finalizedDisputeDataset: FinalizedDisputeDatasetInterface[];
   statsDataset: StatsDatasetInterface;
+}
+
+export interface EncryptedReconciliationDatasetInterface {
+  encryptedSubscriptionChargeDataSet: string;
+  encryptedNewDisputeDataSet: string;
+  encryptedFinalizedDisputeDataSet: string;
+  encryptedStatDataset: string;
 }
 
 export type ReconciliationDataset =

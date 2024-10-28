@@ -52,6 +52,7 @@ export class RequestReconciliationService {
       date: this.date,
       myId: this.myId,
       partnerId: this.partnerId,
+      partnerKid: this.partnerKey.kid,
     });
   }
 
@@ -64,41 +65,52 @@ export class RequestReconciliationService {
   // }
 
   async execute() {
-    // download data from partner
-    const data = await this.requestService.download();
-    // decrypt data and inject to service
-    await this.dataService.loadPartnerData(data);
     // build own data
     await this.dataService.loadOwnData();
-    if (this.dataService.compareData()) {
-      // resolve conflict, automatically or manually, for now only automatically
-      // Todo: should break the process and wait for user action if manually
-      // after resolve, should update own data if needed (in another resolving process)
-      // reinit RequestReconciliationService, then call execute => compareData should be true
-      // if compareData not true, should resolve conflict manually again
-      const isResolvedConflict = await this.dataService.resolveConflict();
-      if (!isResolvedConflict) {
-        return;
+    // download data from partner
+    const { encryptedPartnerData, kid } = await this.requestService.download();
+    if (encryptedPartnerData && kid) {
+      // decrypt data and inject to service
+      await this.dataService.loadPartnerData(encryptedPartnerData, kid);
+
+      if (!this.dataService.compareData()) {
+        // resolve conflict, automatically or manually, for now only automatically
+        // Todo: should break the process and wait for user action if manually
+        // after resolve, should update own data if needed (in another resolving process)
+        // reinit RequestReconciliationService, then call execute => compareData should be true
+        // if compareData not true, should resolve conflict manually again
+        const isResolvedConflict = await this.dataService.resolveConflict();
+        if (!isResolvedConflict) {
+          return;
+        }
       }
     }
+    const encryptedOwnData = await this.dataService.encryptOwnData();
     // upload data to s3 via monetaService
-    await this.requestService.upload(data);
+    await this.requestService.upload(encryptedOwnData);
+
     // init reconciliation contracts
     // sign contracts
-    const contractId = uuidv4();
+    const reconciliationId = uuidv4();
     const contractPayload = new DailyReconciliationContractPayload({
       iss: this.myId,
       aud: this.partnerId,
       // Todo: what is sub here?
       sub: this.partnerId,
       // Todo: should use reconciliation record id
-      contractId: contractId,
+      contractId: reconciliationId,
       stats: this.dataService.myData.statsDataset,
     });
     const contract = new DailyReconciliationContract(contractPayload);
     await contract.sign(this.myKey.privateKey);
     // Todo: create reconciliation record with contracts data
-    // await this.dataService.createReconciliationRecord();
+    await this.dataService.dataBuilder.createReconciliationRecord({
+      reconciliationId,
+      contract: contract.data,
+      partnerId: this.partnerId,
+      date: this.date,
+      status: 'pending',
+    });
 
     // init moneta event with contracts data
     const event = new DailyReconciliationRequestEvent({
@@ -107,7 +119,11 @@ export class RequestReconciliationService {
       },
     });
     // send reconciliation request to monetaService
-    await this.requestService.send(event);
+    const sendEventRes = await this.requestService.send(event);
+    await this.dataService.dataBuilder.updateReconciliationRecord({
+      reconciliationId,
+      contract: sendEventRes.contract,
+    });
   }
 
   async handleResponse() {

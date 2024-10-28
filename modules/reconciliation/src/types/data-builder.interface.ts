@@ -14,6 +14,6 @@ export interface DataBuilderInterface {
   getFinalizedDisputes(partnerId: string, date: Date): Promise<FinalizedDisputeDatasetInterface[]>;
   getStats(partnerId: string, date: Date): Promise<StatsDatasetInterface>;
 
-  createReconciliationRecord(): Promise<any>;
-  updateReconciliationRecord(): Promise<any>;
+  createReconciliationRecord(input: any): Promise<any>;
+  updateReconciliationRecord(input: any): Promise<any>;
 }

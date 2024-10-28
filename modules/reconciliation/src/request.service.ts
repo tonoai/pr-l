@@ -1,18 +1,21 @@
 import { RequestBuilderInterface } from './types/request-builder-interface';
 import { DailyReconciliationRequestEvent } from '../../event-contract/src/events/daily-reconciliation-request.event';
 import { DailyReconciliationResponseEvent } from '../../event-contract/src/events/daily-reconciliation-response.event';
-import { PublicKeyInterface } from './types/key.interface';
+import { EncryptedReconciliationDatasetInterface } from '@pressingly-modules/reconciliation/src/types/reconciliation-dataset.interface';
+import { EventResponse } from '@pressingly-modules/event-contract/src/events/types/event-response';
 
 export interface RequestServiceConfigs {
   requestBuilder: RequestBuilderInterface;
   date: Date;
   myId: string;
   partnerId: string;
+  partnerKid: string;
 }
 export class RequestService {
-  private requestBuilder: RequestBuilderInterface;
+  public requestBuilder: RequestBuilderInterface;
   private readonly date: Date;
   private readonly partnerId: string;
+  private readonly partnerKid: string;
   private readonly myId: string;
 
   constructor(configs: RequestServiceConfigs) {
@@ -20,28 +23,36 @@ export class RequestService {
     this.date = configs.date;
     this.myId = configs.myId;
     this.partnerId = configs.partnerId;
+    this.partnerKid = configs.partnerKid;
   }
 
-  async upload(data: any): Promise<void> {
-    const uploadLink = await this.requestBuilder.getUploadLink(data, this.partnerId, this.date);
+  async upload(data: EncryptedReconciliationDatasetInterface): Promise<void> {
+    const uploadLink = await this.requestBuilder.getUploadLink(
+      this.partnerId,
+      this.partnerKid,
+      this.date,
+    );
     // Todo: upload data to uploadLink
+    // create each file for each dataset, then compress them into one file
+    // return void
   }
 
-  async download(): Promise<{ data: any; kid: string }> {
+  async download(): Promise<{
+    encryptedPartnerData: EncryptedReconciliationDatasetInterface;
+    kid: string;
+  }> {
     const { downloadUrl, kid } = await this.requestBuilder.getDownloadInfo(this.myId, this.date);
     // Todo: download data from downloadUrl
     // return downloaded data (encrypted) and kid to decrypt
 
     // Todo: publisher and membership only use one key for now
     // so the return kid must be the same as publisher kid/ membership kid
-    return { data: downloadUrl, kid };
+    return { encryptedPartnerData: {} as EncryptedReconciliationDatasetInterface, kid };
   }
 
-  send(event: DailyReconciliationRequestEvent | DailyReconciliationResponseEvent): Promise<void> {
+  send(
+    event: DailyReconciliationRequestEvent | DailyReconciliationResponseEvent,
+  ): Promise<EventResponse> {
     return this.requestBuilder.send(event);
-  }
-
-  async getPublicKeyByKid(kid: string): Promise<PublicKeyInterface> {
-    return this.requestBuilder.getPublicKeyByKid(kid);
   }
 }

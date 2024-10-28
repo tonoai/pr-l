@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
+  EncryptedReconciliationDatasetInterface,
   FinalizedDisputeDatasetInterface,
   NewDisputeDatasetInterface,
   ReconciliationDataset,
@@ -36,7 +37,7 @@ export interface ConflictDataInterface {
 
 @Injectable()
 export class DataService {
-  private dataBuilder: DataBuilderInterface;
+  public dataBuilder: DataBuilderInterface;
   private myKey: PrinvateKeyInterface;
   private partnerKey: PublicKeyInterface;
   private date: Date;
@@ -71,21 +72,22 @@ export class DataService {
     return this;
   }
 
-  async loadPartnerData(encryptedData: {
-    encryptedSubscriptionChargeDataSet: string;
-    encryptedNewDisputeDataSet: string;
-    encryptedFinalizedDisputeDataSet: string;
-    encryptedStatDataset: string;
-  }) {
+  async loadPartnerData(encryptedData: EncryptedReconciliationDatasetInterface, kid) {
+    if (kid !== this.myKey.kid) {
+      // for now, only use one key on publisher and membership
+      throw new Error('Invalid encrypted kid');
+    }
     this.partnerData = await Promise.all([
       this.decryptData<SubscriptionChargeDatasetInterface[]>(
         encryptedData.encryptedSubscriptionChargeDataSet,
+        kid,
       ),
-      this.decryptData<NewDisputeDatasetInterface[]>(encryptedData.encryptedNewDisputeDataSet),
+      this.decryptData<NewDisputeDatasetInterface[]>(encryptedData.encryptedNewDisputeDataSet, kid),
       this.decryptData<FinalizedDisputeDatasetInterface[]>(
         encryptedData.encryptedFinalizedDisputeDataSet,
+        kid,
       ),
-      this.decryptData<StatsDatasetInterface>(encryptedData.encryptedStatDataset),
+      this.decryptData<StatsDatasetInterface>(encryptedData.encryptedStatDataset, kid),
     ]).then(
       ([subscriptionChargeDataset, newDisputeDataset, finalizedDisputeDataset, statsDataset]) => ({
         subscriptionChargeDataset,
@@ -98,12 +100,7 @@ export class DataService {
     return this;
   }
 
-  async encryptAllData(): Promise<{
-    encryptedSubscriptionChargeDataSet: string;
-    encryptedNewDisputeDataSet: string;
-    encryptedFinalizedDisputeDataSet: string;
-    encryptedStatDataset: string;
-  }> {
+  async encryptOwnData(): Promise<EncryptedReconciliationDatasetInterface> {
     return Promise.all([
       this.encryptData(this.myData.subscriptionChargeDataset),
       this.encryptData(this.myData.newDisputeDataset),
@@ -153,8 +150,14 @@ export class DataService {
       .encrypt(this.partnerKey.publicKey);
   }
 
-  private async decryptData<T = ReconciliationDataset>(encryptedData: string): Promise<T> {
-    // Todo: need to load private myKey matching the public myKey used to encrypt the data (kid)
+  private async decryptData<T = ReconciliationDataset>(
+    encryptedData: string,
+    kid: string,
+  ): Promise<T> {
+    if (kid !== this.myKey.kid) {
+      // noted: this is not a good practice, but for now, we only have one key
+      throw new Error('Invalid kid');
+    }
     const { plaintext } = await compactDecrypt(encryptedData, this.myKey.privateKey);
     const data = JSON.parse(new TextDecoder().decode(plaintext));
     // Todo: validate data
