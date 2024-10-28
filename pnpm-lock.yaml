@@ -145,6 +145,15 @@ importers:
         specifier: ^10.0.0
         version: 10.0.0
 
+  modules/event-contract:
+    dependencies:
+      jose:
+        specifier: ^5.4.0
+        version: 5.9.6
+      uuid:
+        specifier: ^10.0.0
+        version: 10.0.0
+
   modules/healthz: {}
 
   modules/reconciliation:

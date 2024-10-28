@@ -5,6 +5,7 @@ import type { ClassConstructor } from 'class-transformer';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { BaseContractPayload } from './base.contract-payload';
+import { Base64Utils } from '../utils/base-64.utils';
 
 export type GeneralJWSSignature = Omit<FlattenedJWSInput, 'payload'>;
 export type VerifiedSignature = {
@@ -30,15 +31,10 @@ export abstract class BaseContract<T extends BaseContractPayload> {
     }
   }
 
-  static base64Encode(data: string | Uint8Array): string {
-    // remove Base64 Padding
-    return Buffer.from(data).toString('base64').replace(/=+$/, '');
-  }
-
   fromPayload(payload: T): this {
     this.payload = payload;
     this.uint8ArrayPayload = this.encoder.encode(this.payload.toString());
-    this.base64Payload = BaseContract.base64Encode(this.uint8ArrayPayload);
+    this.base64Payload = Base64Utils.encodeAndRemovePadding(this.uint8ArrayPayload);
     this.signatures = [];
     this.jws = {
       payload: this.base64Payload,

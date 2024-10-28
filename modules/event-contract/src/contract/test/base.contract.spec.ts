@@ -3,6 +3,7 @@ import { BaseContract } from '../base.contract';
 import type { GeneralJWS } from 'jose';
 import { v4 as uuidv4 } from 'uuid';
 import { BaseContractPayload } from '../base.contract-payload';
+import { Base64Utils } from '../../utils/base-64.utils';
 
 class TestBaseContractPayload extends BaseContractPayload {
   contractType = 'TestContract';
@@ -29,29 +30,13 @@ describe('BaseContract', () => {
     expect(contract.getPayload()).toEqual(payload);
   });
 
-  describe('BaseContract base64Encode', () => {
-    it('should correctly encode string to base64', () => {
-      const data = 'test';
-      const encoded = TestBaseContract.base64Encode(data);
-
-      expect(encoded).toEqual(Buffer.from(data).toString('base64').replace(/=+$/, ''));
-    });
-
-    it('should correctly encode Uint8Array to base64', () => {
-      const data = new Uint8Array([116, 101, 115, 116]); // 'test' in Uint8Array
-      const encoded = TestBaseContract.base64Encode(data);
-
-      expect(encoded).toEqual(Buffer.from(data).toString('base64').replace(/=+$/, ''));
-    });
-  });
-
   it('should init contract from payload successfully', () => {
     const payload = new TestBaseContractPayload();
     baseContract.fromPayload(payload);
 
     expect(baseContract.getPayload()).toEqual(payload);
     expect(baseContract.data).toEqual({
-      payload: BaseContract.base64Encode(payload.toString()),
+      payload: Base64Utils.encodeAndRemovePadding(payload.toString()),
       signatures: [],
     });
   });
@@ -121,7 +106,7 @@ describe('BaseContract', () => {
     baseContract.fromPayload(payload);
 
     expect(baseContract.data).toEqual({
-      payload: BaseContract.base64Encode(payload.toString()),
+      payload: Base64Utils.encodeAndRemovePadding(payload.toString()),
       signatures: [],
     });
   });
