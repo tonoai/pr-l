@@ -21,6 +21,15 @@
       "compilerOptions": {
         "tsConfigPath": "modules/healthz/tsconfig.lib.json"
       }
+    },
+    "event-contract": {
+      "type": "library",
+      "root": "modules/event-contract",
+      "entryFile": "index",
+      "sourceRoot": "modules/event-contract/src",
+      "compilerOptions": {
+        "tsConfigPath": "modules/event-contract/tsconfig.lib.json"
+      }
     }
   }
 }
