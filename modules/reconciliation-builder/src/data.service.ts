@@ -9,7 +9,7 @@ import {
   StatsDatasetInterface,
   SubscriptionChargeDatasetInterface,
 } from './types/reconciliation-dataset.interface';
-import { PrinvateKeyInterface, PublicKeyInterface } from './types/key.interface';
+import { PrivateKeyInterface, PublicKeyInterface } from './types/key.interface';
 import { compactDecrypt, CompactEncrypt } from 'jose';
 import { DataBuilderInterface } from './types/data-builder.interface';
 import { CompareDatasetUtils } from '@pressingly-modules/reconciliation-builder/src/utils/compare-dataset.utils';
@@ -18,7 +18,7 @@ import { SubscriptionChargeContract } from '@pressingly-modules/event-contract/s
 
 export interface DataServiceConfigs {
   dataBuilder: DataBuilderInterface;
-  myKey: PrinvateKeyInterface;
+  myKey: PrivateKeyInterface;
   partnerKey: PublicKeyInterface;
   date: Date;
   partnerId: string;
@@ -33,7 +33,7 @@ export interface ConflictInterface {
 
 export class DataService {
   public dataBuilder: DataBuilderInterface;
-  private myKey: PrinvateKeyInterface;
+  private myKey: PrivateKeyInterface;
   private partnerKey: PublicKeyInterface;
   private date: Date;
   private partnerId: string;

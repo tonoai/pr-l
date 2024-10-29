@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DataBuilderInterface } from '@pressingly-modules/reconciliation-builder/src/types/data-builder.interface';
 import { RequestBuilderInterface } from '@pressingly-modules/reconciliation-builder/src/types/request-builder-interface';
 import {
-  PrinvateKeyInterface,
+  PrivateKeyInterface,
   PublicKeyInterface,
 } from '@pressingly-modules/reconciliation-builder/src/types/key.interface';
 import { RequestReconciliationServiceConfigs } from '@pressingly-modules/reconciliation-builder/src/request-reconciliation.service';
@@ -18,7 +18,7 @@ export interface ReconciliationServiceConfigs
 export class ReconciliationConfigService implements ReconciliationServiceConfigs {
   dataBuilder: DataBuilderInterface;
   requestBuilder: RequestBuilderInterface;
-  myKey: PrinvateKeyInterface;
+  myKey: PrivateKeyInterface;
   // Todo: should load partner key and partnerId dynamically
   partnerKey: PublicKeyInterface;
   partnerId: string;

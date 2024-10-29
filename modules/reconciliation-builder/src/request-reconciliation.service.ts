@@ -7,39 +7,33 @@ import { DailyReconciliationContract } from '@pressingly-modules/event-contract/
 import { DailyReconciliationContractPayload } from '@pressingly-modules/event-contract/src/contract/contracts/daily-reconciliation/daily-reconciliation.contract-payload';
 import { v4 as uuidv4 } from 'uuid';
 import { DailyReconciliationRequestEvent } from '../../event-contract/src/events/daily-reconciliation-request.event';
-import { PrinvateKeyInterface, PublicKeyInterface } from './types/key.interface';
+import { PrivateKeyInterface, PublicKeyInterface } from './types/key.interface';
 
 export interface RequestReconciliationServiceConfigs {
   dataBuilder: DataBuilderInterface;
   requestBuilder: RequestBuilderInterface;
-  myKey: PrinvateKeyInterface;
+  myKey: PrivateKeyInterface;
   partnerKey: PublicKeyInterface;
   partnerId: string;
   myId: string;
   date?: Date;
-  maxRetry?: number;
-  numberOfRetried?: number;
 }
 export class RequestReconciliationService {
-  private dataService: DataService;
-  private requestService: RequestService;
-  private myKey: PrinvateKeyInterface;
-  private partnerKey: PublicKeyInterface;
-  private myId: string;
-  private partnerId: string;
-  private numberOfRetried: number;
-  private maxRetry: number;
-  private date: Date;
+  private readonly dataService: DataService;
+  private readonly requestService: RequestService;
+  private readonly myKey: PrivateKeyInterface;
+  private readonly partnerKey: PublicKeyInterface;
+  private readonly myId: string;
+  private readonly partnerId: string;
+  private readonly date: Date;
 
-  // Todo: construct from response, to complete the process
-  constructor(configs: RequestReconciliationServiceConfigs) {
+  // Not allow to new instance directly, should use static method create, for async constructor
+  private constructor(configs: RequestReconciliationServiceConfigs) {
     this.myId = configs.myId;
     this.partnerId = configs.partnerId;
     this.date = configs.date ?? new Date();
     this.myKey = configs.myKey;
     this.partnerKey = configs.partnerKey;
-    this.numberOfRetried = configs.numberOfRetried ?? 0;
-    this.maxRetry = configs.maxRetry ?? 1;
     this.dataService = new DataService({
       dataBuilder: configs.dataBuilder,
       myKey: this.myKey,
@@ -56,13 +50,14 @@ export class RequestReconciliationService {
     });
   }
 
-  // fromResponse(response: any) {
-  //   // get own myKey
-  //   // get partner myKey
-  //   // get dataService
-  //   // get requestService
-  //   // get maxRetry
-  // }
+  static async create(configs: Omit<RequestReconciliationServiceConfigs, 'partnerKey'>) {
+    const partnerKey = await configs.requestBuilder.getPartnerPublicKey(configs.partnerId);
+
+    return new RequestReconciliationService({
+      ...configs,
+      partnerKey,
+    });
+  }
 
   async execute() {
     // build own data
@@ -124,35 +119,5 @@ export class RequestReconciliationService {
       reconciliationId,
       contract: sendEventRes.contract,
     });
-  }
-
-  async handleResponse() {
-    // Init resolve contracts
-    // validate contracts
-    // if success
-    // update reconciliation-builder record -- end first round
-    // await this.dataService.updateReconciliationRecord();
-    // ****
-    // if failed
-    // retry or not
-    if (this.numberOfRetried < this.maxRetry) {
-      await this.retry();
-    }
-  }
-
-  async retry() {
-    this.numberOfRetried++;
-    // init the new reconciliation-builder record
-    // await this.dataService.createReconciliationRecord();
-    // init new RequestReconciliationService
-    // pull the partner data from monetaService
-    // compare the data
-    // if equal
-    // ????
-    // ***
-    // if not equal
-    // resolve conflict
-    // re-execute with new Build own data
-    await this.execute();
   }
 }

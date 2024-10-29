@@ -1,6 +1,6 @@
 import type { KeyObject } from 'crypto';
 
-export interface PrinvateKeyInterface {
+export interface PrivateKeyInterface {
   kid: string;
   privateKey: KeyObject;
 }

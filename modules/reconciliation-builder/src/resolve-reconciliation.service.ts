@@ -1,4 +1,4 @@
-import { PrinvateKeyInterface, PublicKeyInterface } from './types/key.interface';
+import { PrivateKeyInterface, PublicKeyInterface } from './types/key.interface';
 import { RequestService } from './request.service';
 import { DataService } from './data.service';
 import { DataBuilderInterface } from './types/data-builder.interface';
@@ -6,31 +6,31 @@ import { RequestBuilderInterface } from './types/request-builder-interface';
 import { DailyReconciliationContract } from '@pressingly-modules/event-contract/src/contract/contracts/daily-reconciliation/daily-reconciliation.contract';
 import {
   DailyReconciliationContractPayload,
-  DailyReconciliationResponseProtectedHeader,
+  DailyReconciliationResolveProtectedHeader,
+  DailyReconciliationResolveStatus,
 } from '@pressingly-modules/event-contract/src/contract/contracts/daily-reconciliation/daily-reconciliation.contract-payload';
 import { DailyReconciliationResponseEvent } from '../../event-contract/src/events/daily-reconciliation-response.event';
 import { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
-import { DailyReconciliationContractStatus } from '@pressingly-modules/event-contract/src/contract/const/daily-reconciliation-contract-status';
 
 export interface ResolveReconciliationServiceConfigs {
   dataBuilder: DataBuilderInterface;
   requestBuilder: RequestBuilderInterface;
-  myKey: PrinvateKeyInterface;
+  myKey: PrivateKeyInterface;
   partnerKey: PublicKeyInterface;
   partnerId: string;
-  requestContract: PinetContract;
   myId: string;
+  requestContract: PinetContract;
 }
 export class ResolveReconciliationService {
-  private dataService: DataService;
-  private requestService: RequestService;
-  private myKey: PrinvateKeyInterface;
-  private partnerKey: PublicKeyInterface;
-  private myId: string;
-  private partnerId: string;
-  private date: Date;
-  private requestContract: DailyReconciliationContract;
-  private requestContractPayload: DailyReconciliationContractPayload;
+  private readonly dataService: DataService;
+  private readonly requestService: RequestService;
+  private readonly myKey: PrivateKeyInterface;
+  private readonly partnerKey: PublicKeyInterface;
+  private readonly myId: string;
+  private readonly partnerId: string;
+  private readonly date: Date;
+  private readonly requestContract: DailyReconciliationContract;
+  private readonly requestContractPayload: DailyReconciliationContractPayload;
 
   constructor(configs: ResolveReconciliationServiceConfigs) {
     this.myId = configs.myId;
@@ -56,8 +56,17 @@ export class ResolveReconciliationService {
     });
   }
 
+  static async create(configs: Omit<ResolveReconciliationServiceConfigs, 'partnerKey'>) {
+    const partnerKey = await configs.requestBuilder.getPartnerPublicKey(configs.partnerId);
+
+    return new ResolveReconciliationService({
+      ...configs,
+      partnerKey,
+    });
+  }
+
   async execute() {
-    const reconciliationEntity = await this.dataService.dataBuilder.createReconciliationRecord({
+    await this.dataService.dataBuilder.createReconciliationRecord({
       id: this.requestContractPayload.contractId,
       date: this.date,
       partnerId: this.partnerId,
@@ -72,16 +81,16 @@ export class ResolveReconciliationService {
       ]);
     } catch (err) {
       return this.signContractAndSendEvent({
-        status: 'failed',
+        status: DailyReconciliationResolveStatus.FAILED,
         // Todo: should be more specific error
-        message: err,
+        message: 'Verifying contract failed',
       });
     }
     // download data from partner
     const { encryptedPartnerData, kid } = await this.requestService.download();
     if (!encryptedPartnerData || !kid) {
       return this.signContractAndSendEvent({
-        status: DailyReconciliationContractStatus.FAILED,
+        status: DailyReconciliationResolveStatus.FAILED,
         message: 'Failed to download partner data',
       });
     }
@@ -91,8 +100,8 @@ export class ResolveReconciliationService {
     } catch (err) {
       // TOdo: store the reconciliation-builder record with failed status
       return this.signContractAndSendEvent({
-        status: DailyReconciliationContractStatus.FAILED,
-        message: err,
+        status: DailyReconciliationResolveStatus.FAILED,
+        message: 'Failed to decrypt partner data',
       });
     }
     // TOdo, upload data after resolve conflict
@@ -117,19 +126,19 @@ export class ResolveReconciliationService {
         return;
       } else {
         return this.signContractAndSendEvent({
-          status: DailyReconciliationContractStatus.FAILED,
-          message: 'Data conflict',
+          status: DailyReconciliationResolveStatus.MISMATCHED,
+          message: 'Data mismatch',
         });
       }
     }
 
     return this.signContractAndSendEvent({
-      status: DailyReconciliationContractStatus.RECONCILED,
+      status: DailyReconciliationResolveStatus.RECONCILED,
     });
   }
 
   private async signContractAndSendEvent(
-    protectedHeader: DailyReconciliationResponseProtectedHeader,
+    protectedHeader: DailyReconciliationResolveProtectedHeader,
   ) {
     await this.requestContract.sign(this.myKey.privateKey, protectedHeader, {
       kid: this.myKey.kid,
