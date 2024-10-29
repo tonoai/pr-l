@@ -1,7 +1,7 @@
 import { RequestBuilderInterface } from './types/request-builder-interface';
 import { DailyReconciliationRequestEvent } from '../../event-contract/src/events/daily-reconciliation-request.event';
 import { DailyReconciliationResponseEvent } from '../../event-contract/src/events/daily-reconciliation-response.event';
-import { EncryptedReconciliationDatasetInterface } from '@pressingly-modules/reconciliation/src/types/reconciliation-dataset.interface';
+import { EncryptedReconciliationDatasetInterface } from '@pressingly-modules/reconciliation-builder/src/types/reconciliation-dataset.interface';
 import { EventResponse } from '@pressingly-modules/event-contract/src/events/types/event-response';
 
 export interface RequestServiceConfigs {

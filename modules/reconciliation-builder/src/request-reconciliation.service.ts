@@ -89,7 +89,7 @@ export class RequestReconciliationService {
     // upload data to s3 via monetaService
     await this.requestService.upload(encryptedOwnData);
 
-    // init reconciliation contracts
+    // init reconciliation-builder contracts
     // sign contracts
     const reconciliationId = uuidv4();
     const contractPayload = new DailyReconciliationContractPayload({
@@ -97,13 +97,13 @@ export class RequestReconciliationService {
       aud: this.partnerId,
       // Todo: what is sub here?
       sub: this.partnerId,
-      // Todo: should use reconciliation record id
+      // Todo: should use reconciliation-builder record id
       contractId: reconciliationId,
       stats: this.dataService.myData.statsDataset,
     });
     const contract = new DailyReconciliationContract(contractPayload);
     await contract.sign(this.myKey.privateKey);
-    // Todo: create reconciliation record with contracts data
+    // Todo: create reconciliation-builder record with contracts data
     await this.dataService.dataBuilder.createReconciliationRecord({
       reconciliationId,
       contract: contract.data,
@@ -118,7 +118,7 @@ export class RequestReconciliationService {
         contract: contract.data,
       },
     });
-    // send reconciliation request to monetaService
+    // send reconciliation-builder request to monetaService
     const sendEventRes = await this.requestService.send(event);
     await this.dataService.dataBuilder.updateReconciliationRecord({
       reconciliationId,
@@ -130,7 +130,7 @@ export class RequestReconciliationService {
     // Init resolve contracts
     // validate contracts
     // if success
-    // update reconciliation record -- end first round
+    // update reconciliation-builder record -- end first round
     // await this.dataService.updateReconciliationRecord();
     // ****
     // if failed
@@ -142,7 +142,7 @@ export class RequestReconciliationService {
 
   async retry() {
     this.numberOfRetried++;
-    // init the new reconciliation record
+    // init the new reconciliation-builder record
     // await this.dataService.createReconciliationRecord();
     // init new RequestReconciliationService
     // pull the partner data from monetaService

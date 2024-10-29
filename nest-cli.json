@@ -31,6 +31,15 @@
         "tsConfigPath": "modules/event-contract/tsconfig.lib.json"
       }
     },
+    "reconciliation-builder": {
+      "type": "library",
+      "root": "modules/reconciliation-builder",
+      "entryFile": "index",
+      "sourceRoot": "modules/reconciliation-builder/src",
+      "compilerOptions": {
+        "tsConfigPath": "modules/reconciliation-builder/tsconfig.lib.json"
+      }
+    },
     "reconciliation": {
       "type": "library",
       "root": "modules/reconciliation",

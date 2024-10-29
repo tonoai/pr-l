@@ -1,18 +1,14 @@
 {
-  "name": "@pressingly-modules/reconciliation",
+  "name": "@pressingly-modules/reconciliation-builder",
   "version": "0.0.1",
   "private": true,
   "description": "",
   "dependencies": {
-    "@nestjs/cqrs": "^10.2.7",
-    "@nestjs/typeorm": "^10.0.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
-    "@pressingly-modules/core": "workspace:^",
     "@pressingly-modules/event-contract": "workspace:^",
-    "@pressingly-modules/reconciliation-builder": "workspace:^",
-    "uuid": "^10.0.0",
-    "typeorm": "^0.3.20"
+    "jose": "^5.9.4",
+    "uuid": "^10.0.0"
   },
   "scripts": {
     "build": "tsc -p tsconfig.lib.json"

@@ -20,7 +20,6 @@ export interface ResolveReconciliationServiceConfigs {
   partnerId: string;
   requestContract: PinetContract;
   myId: string;
-  date?: Date;
 }
 export class ResolveReconciliationService {
   private dataService: DataService;
@@ -31,13 +30,16 @@ export class ResolveReconciliationService {
   private partnerId: string;
   private date: Date;
   private requestContract: DailyReconciliationContract;
+  private requestContractPayload: DailyReconciliationContractPayload;
 
   constructor(configs: ResolveReconciliationServiceConfigs) {
     this.myId = configs.myId;
     this.partnerId = configs.partnerId;
-    this.date = configs.date ?? new Date();
     this.myKey = configs.myKey;
     this.partnerKey = configs.partnerKey;
+    this.requestContract = new DailyReconciliationContract().fromJWS(configs.requestContract);
+    this.requestContractPayload = this.requestContract.getPayload();
+    this.date = new Date(this.requestContractPayload.date);
     this.dataService = new DataService({
       dataBuilder: configs.dataBuilder,
       myKey: this.myKey,
@@ -52,12 +54,11 @@ export class ResolveReconciliationService {
       partnerId: this.partnerId,
       partnerKid: this.partnerKey.kid,
     });
-    this.requestContract = new DailyReconciliationContract().fromJWS(configs.requestContract);
   }
 
   async execute() {
     const reconciliationEntity = await this.dataService.dataBuilder.createReconciliationRecord({
-      id: this.requestContract.getPayload().contractId,
+      id: this.requestContractPayload.contractId,
       date: this.date,
       partnerId: this.partnerId,
       status: 'pending',
@@ -88,7 +89,7 @@ export class ResolveReconciliationService {
       // decrypt data and inject to service
       await this.dataService.loadPartnerData(encryptedPartnerData, kid);
     } catch (err) {
-      // TOdo: store the reconciliation record with failed status
+      // TOdo: store the reconciliation-builder record with failed status
       return this.signContractAndSendEvent({
         status: DailyReconciliationContractStatus.FAILED,
         message: err,
@@ -134,7 +135,7 @@ export class ResolveReconciliationService {
       kid: this.myKey.kid,
     });
     await this.dataService.dataBuilder.updateReconciliationRecord({
-      id: this.requestContract.getPayload().contractId,
+      id: this.requestContractPayload.contractId,
       status: protectedHeader.status,
       contract: this.requestContract.data,
     });
@@ -145,10 +146,10 @@ export class ResolveReconciliationService {
         contract: this.requestContract.data,
       },
     });
-    // send reconciliation request to monetaService
+    // send reconciliation-builder request to monetaService
     const sendEventRes = await this.requestService.send(event);
     await this.dataService.dataBuilder.updateReconciliationRecord({
-      id: this.requestContract.getPayload().contractId,
+      id: this.requestContractPayload.contractId,
       status: protectedHeader.status,
       contract: sendEventRes.contract,
     });

@@ -1,16 +1,20 @@
-import { Injectable } from '@nestjs/common';
 import {
+  DailyReconciliationMismatch,
   EncryptedReconciliationDatasetInterface,
   FinalizedDisputeDatasetInterface,
   NewDisputeDatasetInterface,
   ReconciliationDataset,
   ReconciliationDatasetInterface,
+  ReconciliationMismatchInterface,
   StatsDatasetInterface,
   SubscriptionChargeDatasetInterface,
 } from './types/reconciliation-dataset.interface';
 import { PrinvateKeyInterface, PublicKeyInterface } from './types/key.interface';
 import { compactDecrypt, CompactEncrypt } from 'jose';
 import { DataBuilderInterface } from './types/data-builder.interface';
+import { CompareDatasetUtils } from '@pressingly-modules/reconciliation-builder/src/utils/compare-dataset.utils';
+import { DailyReconciliationMismatchType } from '@pressingly-modules/reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
+import { SubscriptionChargeContract } from '@pressingly-modules/event-contract/src/contract/contracts/subscription-charge/subscription-charge.contract';
 
 export interface DataServiceConfigs {
   dataBuilder: DataBuilderInterface;
@@ -27,15 +31,6 @@ export interface ConflictInterface {
   partnerData: SubscriptionChargeDatasetInterface;
 }
 
-export interface ConflictDataInterface {
-  subscriptionChargeDataset: ConflictInterface[];
-  newDisputeDataset: ConflictInterface[];
-  finalizedDisputeDataset: ConflictInterface[];
-  // should be key
-  statsDataset: ConflictInterface;
-}
-
-@Injectable()
 export class DataService {
   public dataBuilder: DataBuilderInterface;
   private myKey: PrinvateKeyInterface;
@@ -44,7 +39,13 @@ export class DataService {
   private partnerId: string;
   myData!: ReconciliationDatasetInterface;
   partnerData!: ReconciliationDatasetInterface;
-  conflictData!: ReconciliationDatasetInterface;
+  dataMismatch: ReconciliationMismatchInterface = {
+    subscriptionCharge: [],
+    newDispute: [],
+    finalizedDispute: [],
+    stats: [],
+    isMismatched: false,
+  };
 
   constructor(configs: DataServiceConfigs) {
     this.dataBuilder = configs.dataBuilder;
@@ -122,9 +123,46 @@ export class DataService {
   }
 
   compareData(): boolean {
-    if (this.myData && this.partnerData) {
-      // Compare data
-      // if has conflict, store to conflictData
+    if (!this.myData || !this.partnerData) {
+      throw new Error('Data not loaded');
+    }
+    const subscriptionChargeMismatches: DailyReconciliationMismatch<SubscriptionChargeDatasetInterface>[] =
+      CompareDatasetUtils.compareDatasets(
+        'subscriptionChargeDataset',
+        this.myData.subscriptionChargeDataset,
+        this.myData.subscriptionChargeDataset,
+      );
+    const newDisputeMismatches: DailyReconciliationMismatch<NewDisputeDatasetInterface>[] =
+      CompareDatasetUtils.compareDatasets(
+        'newDisputeDataset',
+        this.myData.newDisputeDataset,
+        this.myData.newDisputeDataset,
+      );
+    const finalizedDisputeMismatches: DailyReconciliationMismatch<FinalizedDisputeDatasetInterface>[] =
+      CompareDatasetUtils.compareDatasets(
+        'finalizedDisputeDataset',
+        this.myData.finalizedDisputeDataset,
+        this.myData.finalizedDisputeDataset,
+      );
+    const statsMismatch: DailyReconciliationMismatch<StatsDatasetInterface>[] =
+      CompareDatasetUtils.compareDatasets(
+        'statsDataset',
+        this.myData.statsDataset,
+        this.myData.statsDataset,
+      );
+    if (
+      subscriptionChargeMismatches.length ||
+      newDisputeMismatches.length ||
+      finalizedDisputeMismatches.length ||
+      statsMismatch
+    ) {
+      this.dataMismatch = {
+        subscriptionCharge: subscriptionChargeMismatches,
+        newDispute: newDisputeMismatches,
+        finalizedDispute: finalizedDisputeMismatches,
+        stats: statsMismatch,
+        isMismatched: true,
+      };
     }
 
     return true;
@@ -135,6 +173,42 @@ export class DataService {
     // update own data
     // update partner data (????)
     // reset conflict data/ owner data/ partner data
+
+    if (this.dataMismatch.isMismatched) {
+      if (this.dataMismatch.subscriptionCharge.length) {
+        // resolve subscription charge conflict
+        this.dataMismatch.subscriptionCharge.forEach(mismatch => {
+          if (
+            mismatch.type === DailyReconciliationMismatchType.MISSING ||
+            mismatch.type === DailyReconciliationMismatchType.REDUNDANT
+          ) {
+            throw new Error('Not implement resolving for missing and redundant yet');
+          }
+
+          if (mismatch.type === DailyReconciliationMismatchType.CONFLICTED) {
+            const contract = new SubscriptionChargeContract().fromJWS(
+              mismatch.data!.finalizedContract,
+            );
+            const partnerContract = new SubscriptionChargeContract().fromJWS(
+              mismatch.partnerData!.finalizedContract,
+            );
+            // if 2 contract difference
+            // verify 2 contracts
+            // choose the correct and latest one
+            // compare contract data with extracted data of both mismatch and partner mismatch
+            // update the onw data if needed?? but how?
+            // What happen if 2 contracts are correct?
+
+            // if 2 contracts are the same
+            // compare contract data with extracted data of both mismatch and partner mismatch
+          }
+
+          // Todo: the big question is how to update own data?
+          // if resolve conflict automatically, how to update partner data?
+        });
+      }
+    }
+
     return true;
   }
 

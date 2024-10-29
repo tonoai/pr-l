@@ -1,3 +1,10 @@
+import {
+  DailyReconciliationMismatchRefType,
+  DailyReconciliationMismatchStatus,
+  DailyReconciliationMismatchType,
+} from '@pressingly-modules/reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
+import { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
+
 export interface SubscriptionChargeDatasetInterface {
   finalizedContractId: string;
   userId: string;
@@ -5,21 +12,14 @@ export interface SubscriptionChargeDatasetInterface {
   currency: string;
   finalizedAt: number;
   interchangeFee: number;
-  finalizedContract: string;
+  finalizedContract: PinetContract;
 }
 
 export interface NewDisputeDatasetInterface {
   // Todo: This data cannot re-exported
   contractId: string;
-  contract: string;
+  contract: PinetContract;
   issuedAt: number;
-}
-
-export interface FinalizedDisputeDatasetInterface {
-  // Todo: same contract as NewDisputeDatasetInterface if same day
-  contractId: string;
-  resolvedAt: number;
-  contract: string;
 }
 
 export interface StatsDatasetInterface {
@@ -31,7 +31,7 @@ export interface StatsDatasetInterface {
 export interface FinalizedDisputeDatasetInterface {
   contractId: string;
   resolvedAt: number;
-  contract: string;
+  contract: PinetContract;
 }
 
 export interface ReconciliationDatasetInterface {
@@ -53,3 +53,27 @@ export type ReconciliationDataset =
   | NewDisputeDatasetInterface[]
   | FinalizedDisputeDatasetInterface[]
   | StatsDatasetInterface;
+
+export type ReconciliationDataType =
+  | SubscriptionChargeDatasetInterface
+  | NewDisputeDatasetInterface
+  | FinalizedDisputeDatasetInterface
+  | StatsDatasetInterface;
+
+export interface DailyReconciliationMismatch<T> {
+  refId?: string;
+  refType: DailyReconciliationMismatchRefType;
+  data?: T;
+  partnerData?: T;
+  type: DailyReconciliationMismatchType;
+  status: DailyReconciliationMismatchStatus;
+  message: string;
+}
+
+export interface ReconciliationMismatchInterface {
+  subscriptionCharge: DailyReconciliationMismatch<SubscriptionChargeDatasetInterface>[];
+  newDispute: DailyReconciliationMismatch<NewDisputeDatasetInterface>[];
+  finalizedDispute: DailyReconciliationMismatch<FinalizedDisputeDatasetInterface>[];
+  stats: DailyReconciliationMismatch<StatsDatasetInterface>[];
+  isMismatched: boolean;
+}
