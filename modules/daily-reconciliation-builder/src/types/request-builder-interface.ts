@@ -11,11 +11,16 @@ export interface DownloadInfoInterface {
 
 export interface RequestBuilderInterface {
   getUploadLink(partnerId: string, partnerKid: string, date: Date): Promise<string>;
+
   getDownloadInfo(partnerId: string, date: Date): Promise<DownloadInfoInterface>;
-  send(
+
+  sendEvent(
     event: DailyReconciliationRequestEvent | DailyReconciliationResponseEvent,
   ): Promise<EventResponse>;
+
   getPublicKey(kid: string): Promise<KeyObject>;
+
   getPinetCorePublicKey(kid: string): Promise<KeyObject>;
+
   getPartnerPublicKey(partnerId: string): Promise<PublicKeyInterface>;
 }

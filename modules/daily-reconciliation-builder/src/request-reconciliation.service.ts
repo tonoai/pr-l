@@ -3,7 +3,6 @@ import { RequestService } from './request.service';
 import { DataBuilderInterface } from './types/data-builder.interface';
 import { RequestBuilderInterface } from './types/request-builder-interface';
 import { DailyReconciliationContract } from '@pressingly-modules/event-contract/src/contract/contracts/daily-reconciliation/daily-reconciliation.contract';
-// eslint-disable-next-line max-len
 import { DailyReconciliationContractPayload } from '@pressingly-modules/event-contract/src/contract/contracts/daily-reconciliation/daily-reconciliation.contract-payload';
 import { v4 as uuidv4 } from 'uuid';
 import { DailyReconciliationRequestEvent } from '../../event-contract/src/events/daily-reconciliation-request.event';
@@ -18,6 +17,7 @@ export interface RequestReconciliationServiceConfigs {
   id: string;
   date?: Date;
 }
+
 export class RequestReconciliationService {
   private readonly dataService: DataService;
   private readonly requestService: RequestService;

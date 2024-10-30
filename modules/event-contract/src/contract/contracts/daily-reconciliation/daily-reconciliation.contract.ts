@@ -1,4 +1,3 @@
-// eslint-disable-next-line max-len
 import { DailyReconciliationContractPayload } from './daily-reconciliation.contract-payload';
 import { BaseContract } from '@pressingly-modules/event-contract/src/contract/base.contract';
 

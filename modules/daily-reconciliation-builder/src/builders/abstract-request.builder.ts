@@ -7,11 +7,16 @@ import { PublicKeyInterface } from '@pressingly-modules/daily-reconciliation-bui
 
 export abstract class AbstractRequestBuilder implements RequestBuilderInterface {
   abstract getUploadLink(partnerId: string, partnerKid: string, date: Date): Promise<string>;
+
   abstract getDownloadInfo(partnerId: string, date: Date): Promise<DownloadInfoInterface>;
-  abstract send(
+
+  abstract sendEvent(
     event: DailyReconciliationRequestEvent | DailyReconciliationResponseEvent,
   ): Promise<EventResponse>;
+
   abstract getPublicKey(kid: string): Promise<KeyObject>;
+
   abstract getPinetCorePublicKey(kid: string): Promise<KeyObject>;
+
   abstract getPartnerPublicKey(partnerId: string): Promise<PublicKeyInterface>;
 }

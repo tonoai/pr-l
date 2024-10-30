@@ -14,7 +14,12 @@ module.exports = {
   },
   ignorePatterns: ['.eslintrc.js'],
   rules: {
-    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/consistent-type-imports': 'error',
+    '@typescript-eslint/lines-between-class-members': [
+      'error',
+      'always',
+      { exceptAfterSingleLine: true },
+    ],
     '@typescript-eslint/no-unused-vars': [
       'error',
       {
