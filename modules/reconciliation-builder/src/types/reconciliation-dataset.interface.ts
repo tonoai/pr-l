@@ -23,7 +23,7 @@ export interface NewDisputeDatasetInterface {
 }
 
 export interface StatsDatasetInterface {
-  totalSubscriptionChargeAmount: Record<string, number>;
+  totalSubscriptionChargeAmount: number;
   totalInterchangeFee: Record<string, number>;
   newDisputeCount: number;
 }

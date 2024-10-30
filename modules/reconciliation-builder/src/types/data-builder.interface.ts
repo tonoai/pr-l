@@ -16,4 +16,8 @@ export interface DataBuilderInterface {
 
   createReconciliationRecord(input: any): Promise<any>;
   updateReconciliationRecord(input: any): Promise<any>;
+
+  updateSubscriptionCharge(input: SubscriptionChargeDatasetInterface): Promise<any>;
+  createSubscriptionCharge(input: SubscriptionChargeDatasetInterface): Promise<any>;
+  deleteSubscriptionCharge(input: SubscriptionChargeDatasetInterface): Promise<any>;
 }
