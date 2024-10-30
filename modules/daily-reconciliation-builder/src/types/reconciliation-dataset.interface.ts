@@ -6,6 +6,7 @@ import type {
 import type { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
 
 export interface SubscriptionChargeDatasetInterface {
+  subscriptionChargeId: string;
   finalizedContractId: string;
   userId: string;
   amount: number;

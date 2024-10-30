@@ -11,6 +11,7 @@ import type { ResolveReconciliationServiceConfigs } from '@pressingly-modules/da
 import type { KeyInterface } from '@pressingly-modules/event-contract/src/contract/types/key.interface';
 import { DailyReconciliationStatus } from '@pressingly-modules/daily-reconciliation/src/const/daily-reconciliation-status';
 import { RequestReconciliationService } from '@pressingly-modules/daily-reconciliation-builder/src/request-reconciliation.service';
+import type { ReconciliationBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-builder.interface';
 
 export interface FinalizeReconciliationServiceConfigs extends ResolveReconciliationServiceConfigs {
   key: Required<KeyInterface>;
@@ -19,6 +20,7 @@ export interface FinalizeReconciliationServiceConfigs extends ResolveReconciliat
 export class FinalizeReconciliationService {
   private readonly dataService: DataService;
   private readonly requestService: RequestService;
+  private readonly reconciliationBuilder: ReconciliationBuilderInterface;
   private readonly key: Required<KeyInterface>;
   private readonly partnerKey: PublicKeyInterface;
   private readonly id: string;
@@ -49,6 +51,7 @@ export class FinalizeReconciliationService {
       partnerId: this.partnerId,
       partnerKid: this.partnerKey.kid,
     });
+    this.reconciliationBuilder = configs.reconciliationBuilder;
   }
 
   static async create(configs: Omit<FinalizeReconciliationServiceConfigs, 'partnerKey'>) {
@@ -70,7 +73,7 @@ export class FinalizeReconciliationService {
         this.requestService.requestBuilder.getPinetCorePublicKey,
       ]);
     } catch (err) {
-      return this.dataService.dataBuilder.updateReconciliationRecord({
+      return this.reconciliationBuilder.upsertReconciliation({
         id: this.requestContractPayload.contractId,
         status: DailyReconciliationStatus.FAILED,
         contract: this.requestContract.data,
@@ -82,7 +85,7 @@ export class FinalizeReconciliationService {
       this.requestContract.partnerSignatureIndex,
     ).protectedHeader as DailyReconciliationResolveProtectedHeader;
     if (!protectedHeaderResult) {
-      return this.dataService.dataBuilder.updateReconciliationRecord({
+      return this.reconciliationBuilder.upsertReconciliation({
         id: this.requestContractPayload.contractId,
         status: DailyReconciliationStatus.FAILED,
         contract: this.requestContract.data,
@@ -90,7 +93,7 @@ export class FinalizeReconciliationService {
       });
     }
     if (protectedHeaderResult.status === DailyReconciliationResolveStatus.RECONCILED) {
-      return this.dataService.dataBuilder.updateReconciliationRecord({
+      return this.reconciliationBuilder.upsertReconciliation({
         id: this.requestContractPayload.contractId,
         status: DailyReconciliationStatus.RECONCILED,
         contract: this.requestContract.data,
@@ -100,6 +103,7 @@ export class FinalizeReconciliationService {
       const requestReconciliationService = await RequestReconciliationService.create({
         dataBuilder: this.dataService.dataBuilder,
         requestBuilder: this.requestService.requestBuilder,
+        reconciliationBuilder: this.reconciliationBuilder,
         id: this.id,
         partnerId: this.partnerId,
         key: this.key,
@@ -109,7 +113,7 @@ export class FinalizeReconciliationService {
       // no need to await here
       requestReconciliationService.execute();
 
-      return this.dataService.dataBuilder.updateReconciliationRecord({
+      return this.reconciliationBuilder.upsertReconciliation({
         id: this.requestContractPayload.contractId,
         status: DailyReconciliationStatus.FAILED,
         contract: this.requestContract.data,
@@ -117,7 +121,7 @@ export class FinalizeReconciliationService {
       });
     }
 
-    return this.dataService.dataBuilder.updateReconciliationRecord({
+    return this.reconciliationBuilder.upsertReconciliation({
       id: this.requestContractPayload.contractId,
       status: DailyReconciliationStatus.FAILED,
       contract: this.requestContract.data,

@@ -11,6 +11,7 @@ export interface RequestServiceConfigs {
   partnerId: string;
   partnerKid: string;
 }
+
 export class RequestService {
   public requestBuilder: RequestBuilderInterface;
   private readonly date: Date;
@@ -53,6 +54,6 @@ export class RequestService {
   send(
     event: DailyReconciliationRequestEvent | DailyReconciliationResponseEvent,
   ): Promise<EventResponse> {
-    return this.requestBuilder.send(event);
+    return this.requestBuilder.sendEvent(event);
   }
 }

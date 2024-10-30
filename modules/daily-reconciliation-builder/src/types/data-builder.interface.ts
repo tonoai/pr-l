@@ -10,14 +10,25 @@ export interface DataBuilderInterface {
     partnerId: string,
     date: Date,
   ): Promise<SubscriptionChargeDatasetInterface[]>;
+
   getNewDisputes(partnerId: string, date: Date): Promise<NewDisputeDatasetInterface[]>;
+
   getFinalizedDisputes(partnerId: string, date: Date): Promise<FinalizedDisputeDatasetInterface[]>;
+
   getStats(partnerId: string, date: Date): Promise<StatsDatasetInterface>;
 
-  createReconciliationRecord(input: any): Promise<any>;
-  updateReconciliationRecord(input: any): Promise<any>;
+  updateSubscriptionCharge(
+    partnerId: string,
+    input: SubscriptionChargeDatasetInterface,
+  ): Promise<any>;
 
-  updateSubscriptionCharge(input: SubscriptionChargeDatasetInterface): Promise<any>;
-  createSubscriptionCharge(input: SubscriptionChargeDatasetInterface): Promise<any>;
-  deleteSubscriptionCharge(input: SubscriptionChargeDatasetInterface): Promise<any>;
+  createSubscriptionCharge(
+    partnerId: string,
+    input: SubscriptionChargeDatasetInterface,
+  ): Promise<any>;
+
+  deleteSubscriptionCharge(
+    partnerId: string,
+    input: SubscriptionChargeDatasetInterface,
+  ): Promise<any>;
 }

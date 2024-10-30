@@ -1,24 +1,19 @@
-import type { DynamicModule } from '@nestjs/common';
 import { Module } from '@nestjs/common';
-import { DailyReconciliationController } from '@pressingly-modules/daily-reconciliation/src/daily-reconciliation.controller';
-import type { ReconciliationServiceConfigs } from '@pressingly-modules/daily-reconciliation/src/services/reconciliation-config.service';
-import { ReconciliationConfigService } from '@pressingly-modules/daily-reconciliation/src/services/reconciliation-config.service';
-import { CqrsModule } from '@nestjs/cqrs';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { DailyReconciliationEntity } from '@pressingly-modules/daily-reconciliation/src/entities/daily-reconciliation.entity';
+import { DailyReconciliationMismatchEntity } from '@pressingly-modules/daily-reconciliation/src/entities/daily-reconciliation-mismatch.entity';
+import { DailyReconciliationResolutionEntity } from '@pressingly-modules/daily-reconciliation/src/entities/daily-reconciliation-resolution.entity';
+import { ReconciliationBuilder } from '@pressingly-modules/daily-reconciliation/src/builders/reconciliation-data.builder';
 
 @Module({
-  imports: [CqrsModule],
-  controllers: [DailyReconciliationController],
+  imports: [
+    TypeOrmModule.forFeature([
+      DailyReconciliationEntity,
+      DailyReconciliationMismatchEntity,
+      DailyReconciliationResolutionEntity,
+    ]),
+  ],
+  providers: [ReconciliationBuilder],
+  exports: [ReconciliationBuilder],
 })
-export class DailyReconciliationModule {
-  static register(reconciliationServiceConfigs: ReconciliationServiceConfigs): DynamicModule {
-    return {
-      module: DailyReconciliationModule,
-      providers: [
-        {
-          provide: ReconciliationConfigService,
-          useFactory: () => new ReconciliationConfigService(reconciliationServiceConfigs),
-        },
-      ],
-    };
-  }
-}
+export class DailyReconciliationModule {}

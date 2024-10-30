@@ -11,19 +11,23 @@ import {
 } from '@pressingly-modules/event-contract/src/contract/contracts/daily-reconciliation/daily-reconciliation.contract-payload';
 import { DailyReconciliationResponseEvent } from '../../event-contract/src/events/daily-reconciliation-response.event';
 import type { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
+import type { ReconciliationBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-builder.interface';
 
 export interface ResolveReconciliationServiceConfigs {
   dataBuilder: DataBuilderInterface;
   requestBuilder: RequestBuilderInterface;
+  reconciliationBuilder: ReconciliationBuilderInterface;
   key: PrivateKeyInterface;
   partnerKey: PublicKeyInterface;
   partnerId: string;
   id: string;
   requestContract: PinetContract;
 }
+
 export class ResolveReconciliationService {
   private readonly dataService: DataService;
   private readonly requestService: RequestService;
+  private readonly reconciliationBuilder: ReconciliationBuilderInterface;
   private readonly key: PrivateKeyInterface;
   private readonly partnerKey: PublicKeyInterface;
   private readonly id: string;
@@ -54,6 +58,7 @@ export class ResolveReconciliationService {
       partnerId: this.partnerId,
       partnerKid: this.partnerKey.kid,
     });
+    this.reconciliationBuilder = configs.reconciliationBuilder;
   }
 
   static async create(configs: Omit<ResolveReconciliationServiceConfigs, 'partnerKey'>) {
@@ -66,7 +71,7 @@ export class ResolveReconciliationService {
   }
 
   async execute() {
-    await this.dataService.dataBuilder.createReconciliationRecord({
+    await this.reconciliationBuilder.upsertReconciliation({
       id: this.requestContractPayload.contractId,
       date: this.date,
       partnerId: this.partnerId,
@@ -143,7 +148,7 @@ export class ResolveReconciliationService {
     await this.requestContract.sign(this.key.privateKey, protectedHeader, {
       kid: this.key.kid,
     });
-    await this.dataService.dataBuilder.updateReconciliationRecord({
+    await this.reconciliationBuilder.upsertReconciliation({
       id: this.requestContractPayload.contractId,
       status: protectedHeader.status,
       contract: this.requestContract.data,
@@ -157,7 +162,7 @@ export class ResolveReconciliationService {
     });
     // send daily-daily-reconciliation-builder request to monetaService
     const sendEventRes = await this.requestService.send(event);
-    await this.dataService.dataBuilder.updateReconciliationRecord({
+    await this.reconciliationBuilder.upsertReconciliation({
       id: this.requestContractPayload.contractId,
       status: protectedHeader.status,
       contract: sendEventRes.contract,

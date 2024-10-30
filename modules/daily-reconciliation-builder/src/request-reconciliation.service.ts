@@ -7,10 +7,12 @@ import { DailyReconciliationContractPayload } from '@pressingly-modules/event-co
 import { v4 as uuidv4 } from 'uuid';
 import { DailyReconciliationRequestEvent } from '../../event-contract/src/events/daily-reconciliation-request.event';
 import type { PrivateKeyInterface, PublicKeyInterface } from './types/key.interface';
+import type { ReconciliationBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-builder.interface';
 
 export interface RequestReconciliationServiceConfigs {
   dataBuilder: DataBuilderInterface;
   requestBuilder: RequestBuilderInterface;
+  reconciliationBuilder: ReconciliationBuilderInterface;
   key: PrivateKeyInterface;
   partnerKey: PublicKeyInterface;
   partnerId: string;
@@ -21,6 +23,7 @@ export interface RequestReconciliationServiceConfigs {
 export class RequestReconciliationService {
   private readonly dataService: DataService;
   private readonly requestService: RequestService;
+  private readonly reconciliationBuilder: ReconciliationBuilderInterface;
   private readonly key: PrivateKeyInterface;
   private readonly partnerKey: PublicKeyInterface;
   private readonly id: string;
@@ -48,6 +51,7 @@ export class RequestReconciliationService {
       partnerId: this.partnerId,
       partnerKid: this.partnerKey.kid,
     });
+    this.reconciliationBuilder = configs.reconciliationBuilder;
   }
 
   static async create(configs: Omit<RequestReconciliationServiceConfigs, 'partnerKey'>) {
@@ -99,7 +103,7 @@ export class RequestReconciliationService {
     const contract = new DailyReconciliationContract(contractPayload);
     await contract.sign(this.key.privateKey);
     // Todo: create daily-daily-reconciliation-builder record with contracts data
-    await this.dataService.dataBuilder.createReconciliationRecord({
+    await this.reconciliationBuilder.upsertReconciliation({
       reconciliationId,
       contract: contract.data,
       partnerId: this.partnerId,
@@ -115,7 +119,7 @@ export class RequestReconciliationService {
     });
     // send daily-daily-reconciliation-builder request to monetaService
     const sendEventRes = await this.requestService.send(event);
-    await this.dataService.dataBuilder.updateReconciliationRecord({
+    await this.reconciliationBuilder.upsertReconciliation({
       reconciliationId,
       contract: sendEventRes.contract,
     });
