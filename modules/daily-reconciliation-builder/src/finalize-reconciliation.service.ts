@@ -9,7 +9,7 @@ import {
 } from '@pressingly-modules/event-contract/src/contract/contracts/daily-reconciliation/daily-reconciliation.contract-payload';
 import { ResolveReconciliationServiceConfigs } from '@pressingly-modules/daily-reconciliation-builder/src/resolve-reconciliation.service';
 import { KeyInterface } from '@pressingly-modules/event-contract/src/contract/types/key.interface';
-import { DailyReconciliationStatus } from '@pressingly-modules/daily-reconciliation/const/daily-reconciliation-status';
+import { DailyReconciliationStatus } from '@pressingly-modules/daily-reconciliation/src/const/daily-reconciliation-status';
 import { RequestReconciliationService } from '@pressingly-modules/daily-reconciliation-builder/src/request-reconciliation.service';
 
 export interface FinalizeReconciliationServiceConfigs extends ResolveReconciliationServiceConfigs {

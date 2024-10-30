@@ -6,8 +6,8 @@ import {
   STRING_LENGTH,
   STRING_LONG_LENGTH,
 } from '@pressingly-modules/core/src/database/schema/column';
-import { DailyReconciliationStatus } from '@pressingly-modules/daily-reconciliation/const/daily-reconciliation-status';
-import { DailyReconciliationMismatchEntity } from '@pressingly-modules/daily-reconciliation/entities/daily-reconciliation-mismatch.entity';
+import { DailyReconciliationStatus } from '@pressingly-modules/daily-reconciliation/src/const/daily-reconciliation-status';
+import { DailyReconciliationMismatchEntity } from '@pressingly-modules/daily-reconciliation/src/entities/daily-reconciliation-mismatch.entity';
 
 @Entity('daily_reconciliations')
 export class DailyReconciliationEntity extends BaseEntity {

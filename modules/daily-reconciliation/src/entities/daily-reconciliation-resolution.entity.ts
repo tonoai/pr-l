@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import BaseEntity from '@pressingly-modules/core/src/database/entities/base.entity';
-import { DailyReconciliationResolutionsAction } from '@pressingly-modules/daily-reconciliation/const/daily-reconciliation-resolutions-action';
-import { DailyReconciliationMismatchEntity } from '@pressingly-modules/daily-reconciliation/entities/daily-reconciliation-mismatch.entity';
+import { DailyReconciliationResolutionsAction } from '@pressingly-modules/daily-reconciliation/src/const/daily-reconciliation-resolutions-action';
+import { DailyReconciliationMismatchEntity } from '@pressingly-modules/daily-reconciliation/src/entities/daily-reconciliation-mismatch.entity';
 
 @Entity('daily_reconciliation_resolutions')
 export class DailyReconciliationResolutionEntity extends BaseEntity {

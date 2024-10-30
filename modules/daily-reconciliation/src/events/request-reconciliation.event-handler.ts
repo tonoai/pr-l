@@ -1,5 +1,5 @@
 import { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
-import { RequestReconciliationEvent } from '@pressingly-modules/daily-reconciliation/events/request-reconciliation.event';
+import { RequestReconciliationEvent } from '@pressingly-modules/daily-reconciliation/src/events/request-reconciliation.event';
 import { EventsHandler } from '@nestjs/cqrs';
 
 @EventsHandler(RequestReconciliationEvent)

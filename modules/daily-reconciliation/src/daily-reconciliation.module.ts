@@ -1,9 +1,9 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { DailyReconciliationController } from '@pressingly-modules/daily-reconciliation/daily-reconciliation.controller';
+import { DailyReconciliationController } from '@pressingly-modules/daily-reconciliation/src/daily-reconciliation.controller';
 import {
   ReconciliationConfigService,
   ReconciliationServiceConfigs,
-} from '@pressingly-modules/daily-reconciliation/services/reconciliation-config.service';
+} from '@pressingly-modules/daily-reconciliation/src/services/reconciliation-config.service';
 import { CqrsModule } from '@nestjs/cqrs';
 
 @Module({

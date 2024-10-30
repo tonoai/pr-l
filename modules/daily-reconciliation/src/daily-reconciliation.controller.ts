@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { TriggerReconciliationDto } from '@pressingly-modules/daily-reconciliation/dtos/trigger-reconciliation.dto';
+import { TriggerReconciliationDto } from '@pressingly-modules/daily-reconciliation/src/dtos/trigger-reconciliation.dto';
 import { RequestReconciliationService } from '@pressingly-modules/daily-reconciliation-builder/src/request-reconciliation.service';
-import { ReconciliationServiceConfigs } from '@pressingly-modules/daily-reconciliation/services/reconciliation-config.service';
+import { ReconciliationServiceConfigs } from '@pressingly-modules/daily-reconciliation/src/services/reconciliation-config.service';
 
 @Controller('daily-reconciliations')
 export class DailyReconciliationController {
