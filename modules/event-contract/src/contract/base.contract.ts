@@ -4,7 +4,7 @@ import type { KeyObject } from 'crypto';
 import type { ClassConstructor } from 'class-transformer';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
-import { BaseContractPayload } from './base.contract-payload';
+import type { BaseContractPayload } from './base.contract-payload';
 import { Base64Utils } from '../utils/base-64.utils';
 
 export type GeneralJWSSignature = Omit<FlattenedJWSInput, 'payload'>;

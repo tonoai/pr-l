@@ -1,9 +1,9 @@
-import {
+import type {
   DailyReconciliationMismatchRefType,
   DailyReconciliationMismatchStatus,
   DailyReconciliationMismatchType,
 } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
-import { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
+import type { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
 
 export interface SubscriptionChargeDatasetInterface {
   finalizedContractId: string;

@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { DataBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/data-builder.interface';
-import { RequestBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/request-builder-interface';
-import {
+import type { DataBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/data-builder.interface';
+import type { RequestBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/request-builder-interface';
+import type {
   PrivateKeyInterface,
   PublicKeyInterface,
 } from '@pressingly-modules/daily-reconciliation-builder/src/types/key.interface';
-import { RequestReconciliationServiceConfigs } from '@pressingly-modules/daily-reconciliation-builder/src/request-reconciliation.service';
-import { ResolveReconciliationServiceConfigs } from '@pressingly-modules/daily-reconciliation-builder/src/resolve-reconciliation.service';
+import type { RequestReconciliationServiceConfigs } from '@pressingly-modules/daily-reconciliation-builder/src/request-reconciliation.service';
+import type { ResolveReconciliationServiceConfigs } from '@pressingly-modules/daily-reconciliation-builder/src/resolve-reconciliation.service';
 
 export interface ReconciliationServiceConfigs
   extends Omit<

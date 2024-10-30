@@ -1,4 +1,4 @@
-import { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
+import type { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
 
 export class RequestReconciliationEvent {
   constructor(

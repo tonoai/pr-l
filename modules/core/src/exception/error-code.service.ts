@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Nullable } from '../types/common.type';
+import type { Nullable } from '../types/common.type';
 
 export interface ErrorCodeInterface {
   errorCode: string;

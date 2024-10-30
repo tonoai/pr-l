@@ -1,5 +1,6 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import type { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import type { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ServerResponse } from 'http';
 import { instanceToPlain } from 'class-transformer';
@@ -16,7 +17,7 @@ export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> 
   formatResponse(response) {
     return {
       statusCode: response?.statusCode ?? 200,
-      data: response?.statusCode ? response.data : response?.data ?? response,
+      data: response?.statusCode ? response.data : (response?.data ?? response),
     };
   }
 

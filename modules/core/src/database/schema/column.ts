@@ -1,5 +1,5 @@
 import { TableColumn } from 'typeorm';
-import { TableColumnOptions } from 'typeorm/schema-builder/options/TableColumnOptions';
+import type { TableColumnOptions } from 'typeorm/schema-builder/options/TableColumnOptions';
 
 export const STRING_LENGTH = 255;
 export const STRING_SHORT_LENGTH = 64;

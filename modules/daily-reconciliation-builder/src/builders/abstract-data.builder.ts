@@ -1,5 +1,5 @@
-import { DataBuilderInterface } from '../types/data-builder.interface';
-import {
+import type { DataBuilderInterface } from '../types/data-builder.interface';
+import type {
   FinalizedDisputeDatasetInterface,
   NewDisputeDatasetInterface,
   StatsDatasetInterface,

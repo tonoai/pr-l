@@ -1,4 +1,4 @@
-import {
+import type {
   DailyReconciliationMismatch,
   EncryptedReconciliationDatasetInterface,
   FinalizedDisputeDatasetInterface,
@@ -9,9 +9,9 @@ import {
   StatsDatasetInterface,
   SubscriptionChargeDatasetInterface,
 } from './types/reconciliation-dataset.interface';
-import { PrivateKeyInterface, PublicKeyInterface } from './types/key.interface';
+import type { PrivateKeyInterface, PublicKeyInterface } from './types/key.interface';
 import { compactDecrypt, CompactEncrypt } from 'jose';
-import { DataBuilderInterface } from './types/data-builder.interface';
+import type { DataBuilderInterface } from './types/data-builder.interface';
 import { CompareDatasetUtils } from '@pressingly-modules/daily-reconciliation-builder/src/utils/compare-dataset.utils';
 import { DailyReconciliationMismatchType } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
 import { SubscriptionChargeContract } from '@pressingly-modules/event-contract/src/contract/contracts/subscription-charge/subscription-charge.contract';

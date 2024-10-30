@@ -1,5 +1,5 @@
 import { BaseContract } from '../../base.contract';
-import { DisputeRequestContractPayload } from './dispute-request.contract-payload';
+import type { DisputeRequestContractPayload } from './dispute-request.contract-payload';
 
 export class DisputeRequestContract extends BaseContract<DisputeRequestContractPayload> {
   public membershipSignatureIndex = 0;

@@ -1,7 +1,5 @@
-import {
-  ContractPinetEventPayload,
-  PinetEvent,
-} from '@pressingly-modules/event-contract/src/events/pinet-event';
+import type { ContractPinetEventPayload } from '@pressingly-modules/event-contract/src/events/pinet-event';
+import { PinetEvent } from '@pressingly-modules/event-contract/src/events/pinet-event';
 import { v4 as uuidv4 } from 'uuid';
 
 export class DailyReconciliationResponseEvent extends PinetEvent<ContractPinetEventPayload> {

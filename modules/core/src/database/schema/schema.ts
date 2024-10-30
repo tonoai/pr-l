@@ -1,4 +1,5 @@
-import { QueryRunner, Table } from 'typeorm';
+import type { QueryRunner } from 'typeorm';
+import { Table } from 'typeorm';
 
 export class Schema {
   static define(table, columns): Table {

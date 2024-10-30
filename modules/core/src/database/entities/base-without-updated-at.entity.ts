@@ -1,4 +1,10 @@
-import { AfterLoad, BaseEntity as TypeOrmBaseEntity, BeforeInsert, Column, CreateDateColumn } from 'typeorm';
+import {
+  AfterLoad,
+  BaseEntity as TypeOrmBaseEntity,
+  BeforeInsert,
+  Column,
+  CreateDateColumn,
+} from 'typeorm';
 import { Exclude, instanceToPlain } from 'class-transformer';
 
 export default class BaseWithoutUpdatedAtEntity extends TypeOrmBaseEntity {

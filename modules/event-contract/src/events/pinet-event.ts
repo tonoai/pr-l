@@ -8,7 +8,7 @@ import {
   IsUUID,
   ValidateNested,
 } from 'class-validator';
-import { GeneralJWSSignature } from '../contract/base.contract';
+import type { GeneralJWSSignature } from '../contract/base.contract';
 
 export class PinetEventHeader {
   @IsUUID('4')

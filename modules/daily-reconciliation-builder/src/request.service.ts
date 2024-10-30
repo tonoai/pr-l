@@ -1,8 +1,8 @@
-import { RequestBuilderInterface } from './types/request-builder-interface';
-import { DailyReconciliationRequestEvent } from '../../event-contract/src/events/daily-reconciliation-request.event';
-import { DailyReconciliationResponseEvent } from '../../event-contract/src/events/daily-reconciliation-response.event';
-import { EncryptedReconciliationDatasetInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-dataset.interface';
-import { EventResponse } from '@pressingly-modules/event-contract/src/events/types/event-response';
+import type { RequestBuilderInterface } from './types/request-builder-interface';
+import type { DailyReconciliationRequestEvent } from '../../event-contract/src/events/daily-reconciliation-request.event';
+import type { DailyReconciliationResponseEvent } from '../../event-contract/src/events/daily-reconciliation-response.event';
+import type { EncryptedReconciliationDatasetInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-dataset.interface';
+import type { EventResponse } from '@pressingly-modules/event-contract/src/events/types/event-response';
 
 export interface RequestServiceConfigs {
   requestBuilder: RequestBuilderInterface;

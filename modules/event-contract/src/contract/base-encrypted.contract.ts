@@ -2,7 +2,7 @@ import type { KeyObject } from 'crypto';
 import type { ClassConstructor } from 'class-transformer';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
-import { BaseEncryptedContractPayload } from './base-encrypted.contract-payload';
+import type { BaseEncryptedContractPayload } from './base-encrypted.contract-payload';
 import { BaseContract } from './base.contract';
 
 export abstract class BaseEncryptedContract<

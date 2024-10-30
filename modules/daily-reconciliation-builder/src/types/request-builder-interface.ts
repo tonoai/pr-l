@@ -1,8 +1,8 @@
-import { DailyReconciliationRequestEvent } from '../../../event-contract/src/events/daily-reconciliation-request.event';
-import { DailyReconciliationResponseEvent } from '../../../event-contract/src/events/daily-reconciliation-response.event';
-import { EventResponse } from '@pressingly-modules/event-contract/src/events/types/event-response';
-import { KeyObject } from 'crypto';
-import { PublicKeyInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/key.interface';
+import type { DailyReconciliationRequestEvent } from '../../../event-contract/src/events/daily-reconciliation-request.event';
+import type { DailyReconciliationResponseEvent } from '../../../event-contract/src/events/daily-reconciliation-response.event';
+import type { EventResponse } from '@pressingly-modules/event-contract/src/events/types/event-response';
+import type { KeyObject } from 'crypto';
+import type { PublicKeyInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/key.interface';
 
 export interface DownloadInfoInterface {
   downloadUrl: string;

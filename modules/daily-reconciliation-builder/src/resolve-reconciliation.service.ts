@@ -1,16 +1,16 @@
-import { PrivateKeyInterface, PublicKeyInterface } from './types/key.interface';
+import type { PrivateKeyInterface, PublicKeyInterface } from './types/key.interface';
 import { RequestService } from './request.service';
 import { DataService } from './data.service';
-import { DataBuilderInterface } from './types/data-builder.interface';
-import { RequestBuilderInterface } from './types/request-builder-interface';
+import type { DataBuilderInterface } from './types/data-builder.interface';
+import type { RequestBuilderInterface } from './types/request-builder-interface';
 import { DailyReconciliationContract } from '@pressingly-modules/event-contract/src/contract/contracts/daily-reconciliation/daily-reconciliation.contract';
+import type { DailyReconciliationResolveProtectedHeader } from '@pressingly-modules/event-contract/src/contract/contracts/daily-reconciliation/daily-reconciliation.contract-payload';
 import {
   DailyReconciliationContractPayload,
-  DailyReconciliationResolveProtectedHeader,
   DailyReconciliationResolveStatus,
 } from '@pressingly-modules/event-contract/src/contract/contracts/daily-reconciliation/daily-reconciliation.contract-payload';
 import { DailyReconciliationResponseEvent } from '../../event-contract/src/events/daily-reconciliation-response.event';
-import { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
+import type { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
 
 export interface ResolveReconciliationServiceConfigs {
   dataBuilder: DataBuilderInterface;

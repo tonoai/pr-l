@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import type { MigrationInterface, QueryRunner } from 'typeorm';
 import { Schema } from '@pressingly-modules/core/src/database/schema/schema';
 import Column from '@pressingly-modules/core/src/database/schema/column';
 

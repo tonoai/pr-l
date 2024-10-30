@@ -1,6 +1,7 @@
-import { ArgumentsHost, Catch, HttpException, HttpStatus } from '@nestjs/common';
+import type { ArgumentsHost } from '@nestjs/common';
+import { Catch, HttpException, HttpStatus } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
-import { ValidationError } from 'class-validator';
+import type { ValidationError } from 'class-validator';
 import { ConfigService } from '@nestjs/config';
 import { ErrorCodeService } from '../exception/error-code.service';
 import { IncomingMessage } from 'http';

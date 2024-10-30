@@ -1,14 +1,14 @@
-import { PublicKeyInterface } from './types/key.interface';
+import type { PublicKeyInterface } from './types/key.interface';
 import { RequestService } from './request.service';
 import { DataService } from './data.service';
 import { DailyReconciliationContract } from '@pressingly-modules/event-contract/src/contract/contracts/daily-reconciliation/daily-reconciliation.contract';
+import type { DailyReconciliationResolveProtectedHeader } from '@pressingly-modules/event-contract/src/contract/contracts/daily-reconciliation/daily-reconciliation.contract-payload';
 import {
   DailyReconciliationContractPayload,
-  DailyReconciliationResolveProtectedHeader,
   DailyReconciliationResolveStatus,
 } from '@pressingly-modules/event-contract/src/contract/contracts/daily-reconciliation/daily-reconciliation.contract-payload';
-import { ResolveReconciliationServiceConfigs } from '@pressingly-modules/daily-reconciliation-builder/src/resolve-reconciliation.service';
-import { KeyInterface } from '@pressingly-modules/event-contract/src/contract/types/key.interface';
+import type { ResolveReconciliationServiceConfigs } from '@pressingly-modules/daily-reconciliation-builder/src/resolve-reconciliation.service';
+import type { KeyInterface } from '@pressingly-modules/event-contract/src/contract/types/key.interface';
 import { DailyReconciliationStatus } from '@pressingly-modules/daily-reconciliation/src/const/daily-reconciliation-status';
 import { RequestReconciliationService } from '@pressingly-modules/daily-reconciliation-builder/src/request-reconciliation.service';
 
