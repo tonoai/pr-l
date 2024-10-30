@@ -12,31 +12,31 @@ import { PrivateKeyInterface, PublicKeyInterface } from './types/key.interface';
 export interface RequestReconciliationServiceConfigs {
   dataBuilder: DataBuilderInterface;
   requestBuilder: RequestBuilderInterface;
-  myKey: PrivateKeyInterface;
+  key: PrivateKeyInterface;
   partnerKey: PublicKeyInterface;
   partnerId: string;
-  myId: string;
+  id: string;
   date?: Date;
 }
 export class RequestReconciliationService {
   private readonly dataService: DataService;
   private readonly requestService: RequestService;
-  private readonly myKey: PrivateKeyInterface;
+  private readonly key: PrivateKeyInterface;
   private readonly partnerKey: PublicKeyInterface;
-  private readonly myId: string;
+  private readonly id: string;
   private readonly partnerId: string;
   private readonly date: Date;
 
   // Not allow to new instance directly, should use static method create, for async constructor
   private constructor(configs: RequestReconciliationServiceConfigs) {
-    this.myId = configs.myId;
+    this.id = configs.id;
     this.partnerId = configs.partnerId;
     this.date = configs.date ?? new Date();
-    this.myKey = configs.myKey;
+    this.key = configs.key;
     this.partnerKey = configs.partnerKey;
     this.dataService = new DataService({
       dataBuilder: configs.dataBuilder,
-      myKey: this.myKey,
+      key: this.key,
       partnerKey: this.partnerKey,
       date: this.date,
       partnerId: this.partnerId,
@@ -44,7 +44,7 @@ export class RequestReconciliationService {
     this.requestService = new RequestService({
       requestBuilder: configs.requestBuilder,
       date: this.date,
-      myId: this.myId,
+      id: this.id,
       partnerId: this.partnerId,
       partnerKid: this.partnerKey.kid,
     });
@@ -84,21 +84,21 @@ export class RequestReconciliationService {
     // upload data to s3 via monetaService
     await this.requestService.upload(encryptedOwnData);
 
-    // init reconciliation-builder contracts
+    // init daily-daily-reconciliation-builder contracts
     // sign contracts
     const reconciliationId = uuidv4();
     const contractPayload = new DailyReconciliationContractPayload({
-      iss: this.myId,
+      iss: this.id,
       aud: this.partnerId,
       // Todo: what is sub here?
       sub: this.partnerId,
-      // Todo: should use reconciliation-builder record id
+      // Todo: should use daily-daily-reconciliation-builder record id
       contractId: reconciliationId,
-      stats: this.dataService.myData.statsDataset,
+      stats: this.dataService.data.statsDataset,
     });
     const contract = new DailyReconciliationContract(contractPayload);
-    await contract.sign(this.myKey.privateKey);
-    // Todo: create reconciliation-builder record with contracts data
+    await contract.sign(this.key.privateKey);
+    // Todo: create daily-daily-reconciliation-builder record with contracts data
     await this.dataService.dataBuilder.createReconciliationRecord({
       reconciliationId,
       contract: contract.data,
@@ -113,7 +113,7 @@ export class RequestReconciliationService {
         contract: contract.data,
       },
     });
-    // send reconciliation-builder request to monetaService
+    // send daily-daily-reconciliation-builder request to monetaService
     const sendEventRes = await this.requestService.send(event);
     await this.dataService.dataBuilder.updateReconciliationRecord({
       reconciliationId,

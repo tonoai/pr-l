@@ -4,11 +4,11 @@ import {
   DailyReconciliationMismatchRefType,
   DailyReconciliationMismatchStatus,
   DailyReconciliationMismatchType,
-} from '@pressingly-modules/reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
-import { DailyReconciliationEntity } from '@pressingly-modules/reconciliation/entities/daily-reconciliation.entity';
+} from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
+import { DailyReconciliationEntity } from '@pressingly-modules/daily-reconciliation/entities/daily-reconciliation.entity';
 import BaseEntity from '@pressingly-modules/core/src/database/entities/base.entity';
 
-@Entity('daily_reconciliation-mismatches')
+@Entity('daily_reconciliation_mismatches')
 export class DailyReconciliationMismatchEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;

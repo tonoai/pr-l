@@ -31,22 +31,22 @@
         "tsConfigPath": "modules/event-contract/tsconfig.lib.json"
       }
     },
-    "reconciliation-builder": {
+    "daily-reconciliation-builder": {
       "type": "library",
-      "root": "modules/reconciliation-builder",
+      "root": "modules/daily-reconciliation-builder",
       "entryFile": "index",
-      "sourceRoot": "modules/reconciliation-builder/src",
+      "sourceRoot": "modules/daily-reconciliation-builder/src",
       "compilerOptions": {
-        "tsConfigPath": "modules/reconciliation-builder/tsconfig.lib.json"
+        "tsConfigPath": "modules/daily-reconciliation-builder/tsconfig.lib.json"
       }
     },
-    "reconciliation": {
+    "daily-reconciliation": {
       "type": "library",
-      "root": "modules/reconciliation",
+      "root": "modules/daily-reconciliation",
       "entryFile": "index",
-      "sourceRoot": "modules/reconciliation/src",
+      "sourceRoot": "modules/daily-reconciliation/src",
       "compilerOptions": {
-        "tsConfigPath": "modules/reconciliation/tsconfig.lib.json"
+        "tsConfigPath": "modules/daily-reconciliation/tsconfig.lib.json"
       }
     }
   }

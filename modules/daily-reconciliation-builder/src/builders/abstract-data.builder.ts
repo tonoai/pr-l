@@ -6,11 +6,6 @@ import {
   SubscriptionChargeDatasetInterface,
 } from '../types/reconciliation-dataset.interface';
 
-export interface DataBuilderConfigs {
-  date: Date;
-  partnerId: string;
-}
-
 export abstract class AbstractDataBuilder implements DataBuilderInterface {
   abstract getSubscriptionCharges(
     partnerId: string,
@@ -24,4 +19,7 @@ export abstract class AbstractDataBuilder implements DataBuilderInterface {
   abstract getStats(partnerId: string, date: Date): Promise<StatsDatasetInterface>;
   abstract createReconciliationRecord(): Promise<any>;
   abstract updateReconciliationRecord(): Promise<any>;
+  abstract updateSubscriptionCharge(input: SubscriptionChargeDatasetInterface): Promise<any>;
+  abstract createSubscriptionCharge(input: SubscriptionChargeDatasetInterface): Promise<any>;
+  abstract deleteSubscriptionCharge(input: SubscriptionChargeDatasetInterface): Promise<any>;
 }

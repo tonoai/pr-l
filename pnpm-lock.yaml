@@ -136,18 +136,7 @@ importers:
         specifier: ^0.3.20
         version: 0.3.20(ts-node@10.9.2(@types/node@20.17.0)(typescript@5.6.3))
 
-  modules/event-contract:
-    dependencies:
-      jose:
-        specifier: ^5.4.0
-        version: 5.9.6
-      uuid:
-        specifier: ^10.0.0
-        version: 10.0.0
-
-  modules/healthz: {}
-
-  modules/reconciliation:
+  modules/daily-reconciliation:
     dependencies:
       '@nestjs/cqrs':
         specifier: ^10.2.7
@@ -158,12 +147,12 @@ importers:
       '@pressingly-modules/core':
         specifier: workspace:^
         version: link:../core
+      '@pressingly-modules/daily-reconciliation-builder':
+        specifier: workspace:^
+        version: link:../daily-reconciliation-builder
       '@pressingly-modules/event-contract':
         specifier: workspace:^
         version: link:../event-contract
-      '@pressingly-modules/reconciliation-builder':
-        specifier: workspace:^
-        version: link:../reconciliation-builder
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1
@@ -177,7 +166,7 @@ importers:
         specifier: ^10.0.0
         version: 10.0.0
 
-  modules/reconciliation-builder:
+  modules/daily-reconciliation-builder:
     dependencies:
       '@pressingly-modules/event-contract':
         specifier: workspace:^
@@ -194,6 +183,17 @@ importers:
       uuid:
         specifier: ^10.0.0
         version: 10.0.0
+
+  modules/event-contract:
+    dependencies:
+      jose:
+        specifier: ^5.4.0
+        version: 5.9.6
+      uuid:
+        specifier: ^10.0.0
+        version: 10.0.0
+
+  modules/healthz: {}
 
 packages:
 

@@ -12,13 +12,13 @@ import {
 import { PrivateKeyInterface, PublicKeyInterface } from './types/key.interface';
 import { compactDecrypt, CompactEncrypt } from 'jose';
 import { DataBuilderInterface } from './types/data-builder.interface';
-import { CompareDatasetUtils } from '@pressingly-modules/reconciliation-builder/src/utils/compare-dataset.utils';
-import { DailyReconciliationMismatchType } from '@pressingly-modules/reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
+import { CompareDatasetUtils } from '@pressingly-modules/daily-reconciliation-builder/src/utils/compare-dataset.utils';
+import { DailyReconciliationMismatchType } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
 import { SubscriptionChargeContract } from '@pressingly-modules/event-contract/src/contract/contracts/subscription-charge/subscription-charge.contract';
 
 export interface DataServiceConfigs {
   dataBuilder: DataBuilderInterface;
-  myKey: PrivateKeyInterface;
+  key: PrivateKeyInterface;
   partnerKey: PublicKeyInterface;
   date: Date;
   partnerId: string;
@@ -33,11 +33,11 @@ export interface ConflictInterface {
 
 export class DataService {
   public dataBuilder: DataBuilderInterface;
-  private myKey: PrivateKeyInterface;
+  private key: PrivateKeyInterface;
   private partnerKey: PublicKeyInterface;
   private date: Date;
   private partnerId: string;
-  myData!: ReconciliationDatasetInterface;
+  data!: ReconciliationDatasetInterface;
   partnerData!: ReconciliationDatasetInterface;
   dataMismatch: ReconciliationMismatchInterface = {
     subscriptionCharge: [],
@@ -49,14 +49,14 @@ export class DataService {
 
   constructor(configs: DataServiceConfigs) {
     this.dataBuilder = configs.dataBuilder;
-    this.myKey = configs.myKey;
+    this.key = configs.key;
     this.partnerKey = configs.partnerKey;
     this.date = configs.date;
     this.partnerId = configs.partnerId;
   }
 
   async loadOwnData(): Promise<this> {
-    this.myData = await Promise.all([
+    this.data = await Promise.all([
       this.dataBuilder.getSubscriptionCharges(this.partnerId, this.date),
       this.dataBuilder.getNewDisputes(this.partnerId, this.date),
       this.dataBuilder.getFinalizedDisputes(this.partnerId, this.date),
@@ -74,7 +74,7 @@ export class DataService {
   }
 
   async loadPartnerData(encryptedData: EncryptedReconciliationDatasetInterface, kid) {
-    if (kid !== this.myKey.kid) {
+    if (kid !== this.key.kid) {
       // for now, only use one key on publisher and membership
       throw new Error('Invalid encrypted kid');
     }
@@ -103,10 +103,10 @@ export class DataService {
 
   async encryptOwnData(): Promise<EncryptedReconciliationDatasetInterface> {
     return Promise.all([
-      this.encryptData(this.myData.subscriptionChargeDataset),
-      this.encryptData(this.myData.newDisputeDataset),
-      this.encryptData(this.myData.finalizedDisputeDataset),
-      this.encryptData(this.myData.statsDataset),
+      this.encryptData(this.data.subscriptionChargeDataset),
+      this.encryptData(this.data.newDisputeDataset),
+      this.encryptData(this.data.finalizedDisputeDataset),
+      this.encryptData(this.data.statsDataset),
     ]).then(
       ([
         encryptedSubscriptionChargeDataSet,
@@ -123,32 +123,32 @@ export class DataService {
   }
 
   compareData(): boolean {
-    if (!this.myData || !this.partnerData) {
+    if (!this.data || !this.partnerData) {
       throw new Error('Data not loaded');
     }
     const subscriptionChargeMismatches: DailyReconciliationMismatch<SubscriptionChargeDatasetInterface>[] =
       CompareDatasetUtils.compareDatasets(
         'subscriptionChargeDataset',
-        this.myData.subscriptionChargeDataset,
-        this.myData.subscriptionChargeDataset,
+        this.data.subscriptionChargeDataset,
+        this.data.subscriptionChargeDataset,
       );
     const newDisputeMismatches: DailyReconciliationMismatch<NewDisputeDatasetInterface>[] =
       CompareDatasetUtils.compareDatasets(
         'newDisputeDataset',
-        this.myData.newDisputeDataset,
-        this.myData.newDisputeDataset,
+        this.data.newDisputeDataset,
+        this.data.newDisputeDataset,
       );
     const finalizedDisputeMismatches: DailyReconciliationMismatch<FinalizedDisputeDatasetInterface>[] =
       CompareDatasetUtils.compareDatasets(
         'finalizedDisputeDataset',
-        this.myData.finalizedDisputeDataset,
-        this.myData.finalizedDisputeDataset,
+        this.data.finalizedDisputeDataset,
+        this.data.finalizedDisputeDataset,
       );
     const statsMismatch: DailyReconciliationMismatch<StatsDatasetInterface>[] =
       CompareDatasetUtils.compareDatasets(
         'statsDataset',
-        this.myData.statsDataset,
-        this.myData.statsDataset,
+        this.data.statsDataset,
+        this.data.statsDataset,
       );
     if (
       subscriptionChargeMismatches.length ||
@@ -213,7 +213,7 @@ export class DataService {
   }
 
   private async encryptData(data: ReconciliationDataset): Promise<string> {
-    // Todo: matching kid and public myKey
+    // Todo: matching kid and public key
     const contentBuffer = Buffer.from(JSON.stringify(data));
 
     return new CompactEncrypt(contentBuffer)
@@ -228,11 +228,11 @@ export class DataService {
     encryptedData: string,
     kid: string,
   ): Promise<T> {
-    if (kid !== this.myKey.kid) {
+    if (kid !== this.key.kid) {
       // noted: this is not a good practice, but for now, we only have one key
       throw new Error('Invalid kid');
     }
-    const { plaintext } = await compactDecrypt(encryptedData, this.myKey.privateKey);
+    const { plaintext } = await compactDecrypt(encryptedData, this.key.privateKey);
     const data = JSON.parse(new TextDecoder().decode(plaintext));
     // Todo: validate data
 

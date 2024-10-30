@@ -2,7 +2,7 @@ import { DailyReconciliationRequestEvent } from '../../../event-contract/src/eve
 import { DailyReconciliationResponseEvent } from '../../../event-contract/src/events/daily-reconciliation-response.event';
 import { EventResponse } from '@pressingly-modules/event-contract/src/events/types/event-response';
 import { KeyObject } from 'crypto';
-import { PublicKeyInterface } from '@pressingly-modules/reconciliation-builder/src/types/key.interface';
+import { PublicKeyInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/key.interface';
 
 export interface DownloadInfoInterface {
   downloadUrl: string;

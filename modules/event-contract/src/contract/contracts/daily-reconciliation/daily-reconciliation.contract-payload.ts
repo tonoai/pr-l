@@ -5,10 +5,10 @@ import { BaseContractPayload } from '@pressingly-modules/event-contract/src/cont
 
 export class Stats {
   @IsNumber()
-  totalSubscriptionChargeAmount!: Record<string, number>;
+  totalSubscriptionChargeAmount!: number;
 
   @IsNumber()
-  totalInterchangeFee!: Record<string, number>;
+  totalInterchangeFee!: number;
 
   @IsNumber()
   newDisputeCount!: number;

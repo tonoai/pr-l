@@ -2,7 +2,7 @@ import {
   DailyReconciliationMismatchRefType,
   DailyReconciliationMismatchStatus,
   DailyReconciliationMismatchType,
-} from '@pressingly-modules/reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
+} from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
 import { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
 
 export interface SubscriptionChargeDatasetInterface {
@@ -24,7 +24,7 @@ export interface NewDisputeDatasetInterface {
 
 export interface StatsDatasetInterface {
   totalSubscriptionChargeAmount: number;
-  totalInterchangeFee: Record<string, number>;
+  totalInterchangeFee: number;
   newDisputeCount: number;
 }
 

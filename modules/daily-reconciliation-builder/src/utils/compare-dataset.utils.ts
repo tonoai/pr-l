@@ -3,12 +3,12 @@ import {
   ReconciliationDataset,
   ReconciliationDatasetInterface,
   StatsDatasetInterface,
-} from '@pressingly-modules/reconciliation-builder/src/types/reconciliation-dataset.interface';
+} from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-dataset.interface';
 import {
   DailyReconciliationMismatchRefType,
   DailyReconciliationMismatchStatus,
   DailyReconciliationMismatchType,
-} from '@pressingly-modules/reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
+} from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
 
 export class CompareDatasetUtils {
   static compareDatasets<T extends ReconciliationDataset>(

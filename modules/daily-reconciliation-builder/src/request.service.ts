@@ -1,13 +1,13 @@
 import { RequestBuilderInterface } from './types/request-builder-interface';
 import { DailyReconciliationRequestEvent } from '../../event-contract/src/events/daily-reconciliation-request.event';
 import { DailyReconciliationResponseEvent } from '../../event-contract/src/events/daily-reconciliation-response.event';
-import { EncryptedReconciliationDatasetInterface } from '@pressingly-modules/reconciliation-builder/src/types/reconciliation-dataset.interface';
+import { EncryptedReconciliationDatasetInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-dataset.interface';
 import { EventResponse } from '@pressingly-modules/event-contract/src/events/types/event-response';
 
 export interface RequestServiceConfigs {
   requestBuilder: RequestBuilderInterface;
   date: Date;
-  myId: string;
+  id: string;
   partnerId: string;
   partnerKid: string;
 }
@@ -16,12 +16,12 @@ export class RequestService {
   private readonly date: Date;
   private readonly partnerId: string;
   private readonly partnerKid: string;
-  private readonly myId: string;
+  private readonly id: string;
 
   constructor(configs: RequestServiceConfigs) {
     this.requestBuilder = configs.requestBuilder;
     this.date = configs.date;
-    this.myId = configs.myId;
+    this.id = configs.id;
     this.partnerId = configs.partnerId;
     this.partnerKid = configs.partnerKid;
   }
@@ -41,7 +41,7 @@ export class RequestService {
     encryptedPartnerData: EncryptedReconciliationDatasetInterface;
     kid: string;
   }> {
-    const { downloadUrl, kid } = await this.requestBuilder.getDownloadInfo(this.myId, this.date);
+    const { downloadUrl, kid } = await this.requestBuilder.getDownloadInfo(this.id, this.date);
     // Todo: download data from downloadUrl
     // return downloaded data (encrypted) and kid to decrypt
 
