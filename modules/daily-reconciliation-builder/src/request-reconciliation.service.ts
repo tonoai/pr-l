@@ -66,11 +66,12 @@ export class RequestReconciliationService {
   async execute() {
     // build own data
     await this.dataService.loadOwnData();
+
     // download data from partner
-    const { encryptedPartnerData, kid } = await this.requestService.download();
-    if (encryptedPartnerData && kid) {
+    const encryptedPartnerData = await this.requestService.download();
+    if (encryptedPartnerData) {
       // decrypt data and inject to service
-      await this.dataService.loadPartnerData(encryptedPartnerData, kid);
+      await this.dataService.loadPartnerData(encryptedPartnerData);
 
       if (!this.dataService.compareData()) {
         // resolve conflict, automatically or manually, for now only automatically
@@ -84,6 +85,7 @@ export class RequestReconciliationService {
         }
       }
     }
+
     const encryptedOwnData = await this.dataService.encryptOwnData();
     // upload data to s3 via monetaService
     await this.requestService.upload(encryptedOwnData);
@@ -108,7 +110,8 @@ export class RequestReconciliationService {
       contract: contract.data,
       partnerId: this.partnerId,
       date: this.date,
-      status: 'pending',
+      status: 'processing',
+      issuedAt: new Date(contractPayload.iat),
     });
 
     // init moneta event with contracts data

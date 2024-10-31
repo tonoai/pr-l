@@ -73,22 +73,16 @@ export class DataService {
     return this;
   }
 
-  async loadPartnerData(encryptedData: EncryptedReconciliationDatasetInterface, kid) {
-    if (kid !== this.key.kid) {
-      // for now, only use one key on publisher and membership
-      throw new Error('Invalid encrypted kid');
-    }
+  async loadPartnerData(encryptedData: EncryptedReconciliationDatasetInterface) {
     this.partnerData = await Promise.all([
       this.decryptData<SubscriptionChargeDatasetInterface[]>(
         encryptedData.encryptedSubscriptionChargeDataSet,
-        kid,
       ),
-      this.decryptData<NewDisputeDatasetInterface[]>(encryptedData.encryptedNewDisputeDataSet, kid),
+      this.decryptData<NewDisputeDatasetInterface[]>(encryptedData.encryptedNewDisputeDataSet),
       this.decryptData<FinalizedDisputeDatasetInterface[]>(
         encryptedData.encryptedFinalizedDisputeDataSet,
-        kid,
       ),
-      this.decryptData<StatsDatasetInterface>(encryptedData.encryptedStatDataset, kid),
+      this.decryptData<StatsDatasetInterface>(encryptedData.encryptedStatDataset),
     ]).then(
       ([subscriptionChargeDataset, newDisputeDataset, finalizedDisputeDataset, statsDataset]) => ({
         subscriptionChargeDataset,
@@ -220,18 +214,13 @@ export class DataService {
       .setProtectedHeader({
         alg: 'RSA-OAEP-256',
         enc: 'A256GCM',
+        kid: this.key.kid,
       })
       .encrypt(this.partnerKey.publicKey);
   }
 
-  private async decryptData<T = ReconciliationDataset>(
-    encryptedData: string,
-    kid: string,
-  ): Promise<T> {
-    if (kid !== this.key.kid) {
-      // noted: this is not a good practice, but for now, we only have one key
-      throw new Error('Invalid kid');
-    }
+  private async decryptData<T = ReconciliationDataset>(encryptedData: string): Promise<T> {
+    // Todo: get kid from encryptedData content
     const { plaintext } = await compactDecrypt(encryptedData, this.key.privateKey);
     const data = JSON.parse(new TextDecoder().decode(plaintext));
     // Todo: validate data

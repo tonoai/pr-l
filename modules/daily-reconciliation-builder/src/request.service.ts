@@ -38,17 +38,16 @@ export class RequestService {
     // return void
   }
 
-  async download(): Promise<{
-    encryptedPartnerData: EncryptedReconciliationDatasetInterface;
-    kid: string;
-  }> {
-    const { downloadUrl, kid } = await this.requestBuilder.getDownloadInfo(this.id, this.date);
-    // Todo: download data from downloadUrl
-    // return downloaded data (encrypted) and kid to decrypt
+  async download(): Promise<EncryptedReconciliationDatasetInterface | null> {
+    try {
+      const { downloadUrl } = await this.requestBuilder.getDownloadInfo(this.partnerId, this.date);
 
-    // Todo: publisher and membership only use one key for now
-    // so the return kid must be the same as publisher kid/ membership kid
-    return { encryptedPartnerData: {} as EncryptedReconciliationDatasetInterface, kid };
+      // Todo: download data from downloadUrl
+      // return downloaded data (encrypted) and kid to decrypt
+      return {} as EncryptedReconciliationDatasetInterface;
+    } catch (error) {
+      return null;
+    }
   }
 
   send(

@@ -20,7 +20,7 @@ export class CreateDailyReconciliationTable1730131783789 implements MigrationInt
         Column.string('message', STRING_LENGTH).nullable(),
         Column.jsonb('contract'),
         Column.timestamp('issued_at'),
-        Column.timestamp('reconciled_at'),
+        Column.timestamp('reconciled_at').nullable(),
         Column.timestamp('created_at').setDefault('now()'),
         Column.timestamp('updated_at').setDefault('now()'),
       ]),

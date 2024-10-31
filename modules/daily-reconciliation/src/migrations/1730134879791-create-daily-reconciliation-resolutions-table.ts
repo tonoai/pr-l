@@ -20,7 +20,7 @@ export class CreateDailyReconciliationResolutionTable1730134879791 implements Mi
       true,
     );
     await queryRunner.query(
-      `CREATE INDEX idx_${this.tableName}_reconciliation_id ON ${this.tableName} (reconciliation_id)`,
+      `CREATE INDEX idx_${this.tableName}_reconciliation_mismatch_id ON ${this.tableName} (reconciliation_mismatch_id)`,
     );
   }
 
