@@ -33,9 +33,23 @@ export class RequestService {
       this.partnerKid,
       this.date,
     );
-    // Todo: upload data to uploadLink
-    // create each file for each dataset, then compress them into one file
-    // return void
+
+    console.log(uploadLink);
+
+    // Todo: store to local storage before upload
+    const blob = new Blob([JSON.stringify(data)], { type: 'application/octet-stream' });
+
+    const response = await fetch(uploadLink, {
+      method: 'PUT',
+      body: blob,
+      headers: {
+        'Content-Type': 'application/octet-stream', // Adjust this as needed
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Upload failed: ${response.statusText}`);
+    }
   }
 
   async download(): Promise<EncryptedReconciliationDatasetInterface | null> {

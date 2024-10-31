@@ -92,8 +92,8 @@ export class ResolveReconciliationService {
       });
     }
     // download data from partner
-    const { encryptedPartnerData, kid } = await this.requestService.download();
-    if (!encryptedPartnerData || !kid) {
+    const encryptedPartnerData = await this.requestService.download();
+    if (!encryptedPartnerData) {
       return this.signContractAndSendEvent({
         status: DailyReconciliationResolveStatus.FAILED,
         message: 'Failed to download partner data',
@@ -101,7 +101,7 @@ export class ResolveReconciliationService {
     }
     try {
       // decrypt data and inject to service
-      await this.dataService.loadPartnerData(encryptedPartnerData, kid);
+      await this.dataService.loadPartnerData(encryptedPartnerData);
     } catch (err) {
       // TOdo: store the daily-daily-reconciliation-builder record with failed status
       return this.signContractAndSendEvent({
