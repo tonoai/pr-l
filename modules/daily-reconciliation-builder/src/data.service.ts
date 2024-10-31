@@ -16,7 +16,6 @@ import { CompareDatasetUtils } from '@pressingly-modules/daily-reconciliation-bu
 import { DailyReconciliationMismatchType } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
 import type * as dayjs from 'dayjs';
 import type { ReconciliationBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-builder.interface';
-import { SYSTEM_DEFAULT_UUID } from '../../../../src/core/const/system-default';
 
 export interface DataServiceConfigs {
   dataBuilder: DataBuilderInterface;
@@ -198,7 +197,7 @@ export class DataService {
               reconciliationMismatchId: mismatch.id,
               originalData: mismatch.data!,
               action: 'delete',
-              actionById: SYSTEM_DEFAULT_UUID,
+              // actionById: SYSTEM_DEFAULT_UUID,
             });
           }
 
@@ -208,7 +207,7 @@ export class DataService {
               reconciliationMismatchId: mismatch.id,
               modifiedData: mismatch.partnerData!,
               action: 'create',
-              actionById: SYSTEM_DEFAULT_UUID,
+              // actionById: SYSTEM_DEFAULT_UUID,
             });
           }
 
@@ -238,7 +237,7 @@ export class DataService {
             originalData: mismatch.data!,
             modifiedData: mismatch.partnerData!,
             action: 'create',
-            actionById: SYSTEM_DEFAULT_UUID,
+            // actionById: SYSTEM_DEFAULT_UUID,
           });
         }
       }
