@@ -15,9 +15,12 @@ import type { DataBuilderInterface } from './types/data-builder.interface';
 import { CompareDatasetUtils } from '@pressingly-modules/daily-reconciliation-builder/src/utils/compare-dataset.utils';
 import { DailyReconciliationMismatchType } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
 import type * as dayjs from 'dayjs';
+import type { ReconciliationBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-builder.interface';
+import { SYSTEM_DEFAULT_UUID } from '../../../../src/core/const/system-default';
 
 export interface DataServiceConfigs {
   dataBuilder: DataBuilderInterface;
+  reconciliationBuilder: ReconciliationBuilderInterface;
   key: PrivateKeyInterface;
   partnerKey: PublicKeyInterface;
   date: dayjs.Dayjs;
@@ -27,6 +30,7 @@ export interface DataServiceConfigs {
 
 export class DataService {
   public readonly dataBuilder: DataBuilderInterface;
+  public readonly reconciliationBuilder: ReconciliationBuilderInterface;
   private readonly key: PrivateKeyInterface;
   private readonly partnerKey: PublicKeyInterface;
   private readonly date: dayjs.Dayjs;
@@ -44,6 +48,7 @@ export class DataService {
 
   constructor(configs: DataServiceConfigs) {
     this.dataBuilder = configs.dataBuilder;
+    this.reconciliationBuilder = configs.reconciliationBuilder;
     this.key = configs.key;
     this.partnerKey = configs.partnerKey;
     this.date = configs.date;
@@ -112,7 +117,7 @@ export class DataService {
     );
   }
 
-  compareData(): boolean {
+  async compareData(reconciliationId: string): Promise<boolean> {
     if (!this.data || !this.partnerData) {
       throw new Error('Data not loaded');
     }
@@ -120,25 +125,25 @@ export class DataService {
       CompareDatasetUtils.compareDatasets(
         'subscriptionChargeDataset',
         this.data.subscriptionChargeDataset,
-        this.data.subscriptionChargeDataset,
+        this.partnerData.subscriptionChargeDataset,
       );
     const newDisputeMismatches: DailyReconciliationMismatch<NewDisputeDatasetInterface>[] =
       CompareDatasetUtils.compareDatasets(
         'newDisputeDataset',
         this.data.newDisputeDataset,
-        this.data.newDisputeDataset,
+        this.partnerData.newDisputeDataset,
       );
     const finalizedDisputeMismatches: DailyReconciliationMismatch<FinalizedDisputeDatasetInterface>[] =
       CompareDatasetUtils.compareDatasets(
         'finalizedDisputeDataset',
         this.data.finalizedDisputeDataset,
-        this.data.finalizedDisputeDataset,
+        this.partnerData.finalizedDisputeDataset,
       );
     const statsMismatches: DailyReconciliationMismatch<StatsDatasetInterface>[] =
       CompareDatasetUtils.compareDatasets(
         'statsDataset',
         this.data.statsDataset,
-        this.data.statsDataset,
+        this.partnerData.statsDataset,
       );
     if (
       subscriptionChargeMismatches.length ||
@@ -153,6 +158,15 @@ export class DataService {
         stats: statsMismatches,
         isMismatched: true,
       };
+
+      const mismatches: DailyReconciliationMismatch<Record<string, any>>[] = [];
+      Object.values(this.dataMismatch).forEach(value => {
+        if (!Array.isArray(value)) {
+          return;
+        }
+        mismatches.push(...value.map(mismatch => ({ ...mismatch, reconciliationId })));
+      });
+      await this.reconciliationBuilder.upsertReconciliationMismatches(mismatches);
 
       return false;
     }
@@ -172,15 +186,30 @@ export class DataService {
         // when you are primary, you are always right
         return false;
       }
+      // Todo: no solution to resolve conflict for stats
       if (this.dataMismatch.subscriptionCharge.length) {
         // resolve subscription charge conflict
         for (const mismatch of this.dataMismatch.subscriptionCharge) {
           if (mismatch.type === DailyReconciliationMismatchType.MISSING) {
+            // Todo should return original data here
+            // Todo: should wrap this in a transaction
             await this.dataBuilder.deleteSubscriptionCharge(this.partnerId, mismatch.data!);
+            await this.reconciliationBuilder.upsertReconciliationResolution({
+              reconciliationMismatchId: mismatch.id,
+              originalData: mismatch.data!,
+              action: 'delete',
+              actionById: SYSTEM_DEFAULT_UUID,
+            });
           }
 
           if (mismatch.type === DailyReconciliationMismatchType.REDUNDANT) {
             await this.dataBuilder.createSubscriptionCharge(this.partnerId, mismatch.data!);
+            await this.reconciliationBuilder.upsertReconciliationResolution({
+              reconciliationMismatchId: mismatch.id,
+              modifiedData: mismatch.partnerData!,
+              action: 'create',
+              actionById: SYSTEM_DEFAULT_UUID,
+            });
           }
 
           if (mismatch.type === DailyReconciliationMismatchType.CONFLICTED) {
@@ -204,6 +233,13 @@ export class DataService {
           // Todo: the big question is how to update own data?
           // if resolve conflict automatically, how to update partner data?
           await this.dataBuilder.updateSubscriptionCharge(this.partnerId, mismatch.data!);
+          await this.reconciliationBuilder.upsertReconciliationResolution({
+            reconciliationMismatchId: mismatch.id,
+            originalData: mismatch.data!,
+            modifiedData: mismatch.partnerData!,
+            action: 'create',
+            actionById: SYSTEM_DEFAULT_UUID,
+          });
         }
       }
     }

@@ -1,9 +1,9 @@
 import type { ReconciliationBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-builder.interface';
 
 export abstract class AbstractReconciliationBuilder implements ReconciliationBuilderInterface {
-  abstract upsertReconciliation<Entity>(input: Partial<Entity>): Promise<Entity>;
+  abstract upsertReconciliation<T>(input: Partial<T>): Promise<T>;
 
-  abstract upsertReconciliationMismatch<Entity>(input: Partial<Entity>): Promise<Entity>;
+  abstract upsertReconciliationMismatches<T>(input: Partial<T>[]): Promise<T[]>;
 
-  abstract upsertReconciliationResolution<Entity>(input: Partial<Entity>): Promise<Entity>;
+  abstract upsertReconciliationResolution<T>(input: Partial<T>): Promise<T>;
 }

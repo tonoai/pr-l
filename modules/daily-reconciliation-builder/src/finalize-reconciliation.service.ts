@@ -39,8 +39,10 @@ export class FinalizeReconciliationService {
     this.requestContractPayload = this.requestContract.getPayload();
     this.partnerId = this.requestContractPayload.iss;
     this.date = dayjs(this.requestContractPayload.date);
+    this.reconciliationBuilder = configs.reconciliationBuilder;
     this.dataService = new DataService({
       dataBuilder: configs.dataBuilder,
+      reconciliationBuilder: this.reconciliationBuilder,
       key: this.key,
       partnerKey: this.partnerKey,
       date: this.date,
@@ -53,7 +55,6 @@ export class FinalizeReconciliationService {
       partnerId: this.partnerId,
       partnerKid: this.partnerKey.kid,
     });
-    this.reconciliationBuilder = configs.reconciliationBuilder;
   }
 
   static async create(

@@ -47,8 +47,10 @@ export class ResolveReconciliationService {
     this.partnerId = this.requestContractPayload.iss;
     this.date = dayjs(this.requestContractPayload.date);
     this.isPrimary = configs.isPrimary ?? false;
+    this.reconciliationBuilder = configs.reconciliationBuilder;
     this.dataService = new DataService({
       dataBuilder: configs.dataBuilder,
+      reconciliationBuilder: this.reconciliationBuilder,
       key: this.key,
       partnerKey: this.partnerKey,
       date: this.date,
@@ -62,7 +64,6 @@ export class ResolveReconciliationService {
       partnerId: this.partnerId,
       partnerKid: this.partnerKey.kid,
     });
-    this.reconciliationBuilder = configs.reconciliationBuilder;
   }
 
   static async create(
@@ -129,7 +130,7 @@ export class ResolveReconciliationService {
     await this.requestService.upload(encryptedOwnData);
 
     // build own data
-    if (!this.dataService.compareData()) {
+    if (!(await this.dataService.compareData(this.requestContractPayload.contractId))) {
       // resolve conflict, automatically or manually, for now only automatically
       // Todo: should break the process and wait for user action if manually
       // after resolve, should update own data if needed (in another resolving process)

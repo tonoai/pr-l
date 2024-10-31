@@ -62,6 +62,7 @@ export type ReconciliationDataType =
   | StatsDatasetInterface;
 
 export interface DailyReconciliationMismatch<T> {
+  id: string;
   refId?: string;
   refType: DailyReconciliationMismatchRefType;
   data?: T;

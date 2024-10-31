@@ -23,13 +23,13 @@ export class ReconciliationBuilder extends AbstractReconciliationBuilder {
     return this.reconciliationRepository.save(input) as Promise<T>;
   }
 
-  upsertReconciliationMismatch<T = DailyReconciliationMismatchEntity>(
-    input: Partial<T>,
-  ): Promise<T> {
-    return this.mismatchRepository.save(input) as Promise<T>;
+  upsertReconciliationMismatches<T = DailyReconciliationMismatchEntity>(
+    input: Partial<T>[],
+  ): Promise<T[]> {
+    return this.mismatchRepository.save(input) as Promise<T[]>;
   }
 
-  upsertReconciliationResolution<T = DailyReconciliationMismatchEntity>(
+  upsertReconciliationResolution<T = DailyReconciliationResolutionEntity>(
     input: Partial<T>,
   ): Promise<T> {
     return this.resolutionRepository.save(input) as Promise<T>;

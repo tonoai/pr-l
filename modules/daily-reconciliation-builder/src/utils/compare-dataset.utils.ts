@@ -9,6 +9,7 @@ import {
   DailyReconciliationMismatchStatus,
   DailyReconciliationMismatchType,
 } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
+import { v4 as uuidv4 } from 'uuid';
 
 export class CompareDatasetUtils {
   static compareDatasets<T extends ReconciliationDataset>(
@@ -20,6 +21,7 @@ export class CompareDatasetUtils {
     if (dataset === 'statsDataset') {
       if (!CompareDatasetUtils.areObjectsEqual(array1, array2)) {
         mismatches.push({
+          id: uuidv4(),
           refType: DailyReconciliationMismatchRefType.STATS,
           data: array1 as StatsDatasetInterface,
           partnerData: array2 as StatsDatasetInterface,
@@ -60,6 +62,7 @@ export class CompareDatasetUtils {
           // Record exists in both arrays, check for field conflicts
           if (CompareDatasetUtils.areObjectsEqual(item1, item2)) {
             mismatches.push({
+              id: uuidv4(),
               refId: item1[refIdKey],
               refType: refType,
               data: item1,
@@ -74,6 +77,7 @@ export class CompareDatasetUtils {
         } else {
           // Item2 is redundant if it doesn't exist in array1
           mismatches.push({
+            id: uuidv4(),
             refId: item2[refIdKey],
             refType: refType,
             partnerData: item2,
@@ -88,6 +92,7 @@ export class CompareDatasetUtils {
       indexMap.forEach((index, key) => {
         const item1 = array1[index];
         mismatches.push({
+          id: uuidv4(),
           refId: key,
           refType: refType,
           data: item1,

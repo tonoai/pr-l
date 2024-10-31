@@ -1,7 +1,7 @@
 export interface ReconciliationBuilderInterface {
-  upsertReconciliation<Entity>(input: Partial<Entity>): Promise<Entity>;
+  upsertReconciliation<T>(input: Partial<T>): Promise<T>;
 
-  upsertReconciliationMismatch<Entity>(input: Partial<Entity>): Promise<Entity>;
+  upsertReconciliationMismatches<T>(input: Partial<T>[]): Promise<T[]>;
 
-  upsertReconciliationResolution<Entity>(input: Partial<Entity>): Promise<Entity>;
+  upsertReconciliationResolution<T>(input: Partial<T>): Promise<T>;
 }

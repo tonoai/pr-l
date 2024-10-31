@@ -44,6 +44,7 @@ export class RequestReconciliationService {
     this.isPrimary = configs.isPrimary ?? false;
     this.dataService = new DataService({
       dataBuilder: configs.dataBuilder,
+      reconciliationBuilder: configs.reconciliationBuilder,
       key: this.key,
       partnerKey: this.partnerKey,
       date: this.date,
@@ -70,11 +71,12 @@ export class RequestReconciliationService {
   }
 
   async execute() {
+    const reconciliationId = uuidv4();
     const encryptedPartnerData = await this.requestService.download();
     if (encryptedPartnerData) {
       await this.dataService.loadPartnerData(encryptedPartnerData);
 
-      if (!this.dataService.compareData()) {
+      if (!(await this.dataService.compareData(reconciliationId))) {
         // resolve conflict, automatically or manually, for now only automatically
         // Todo: should break the process and wait for user action if manually
         // after resolve, should update own data if needed (in another resolving process)
@@ -95,7 +97,6 @@ export class RequestReconciliationService {
 
     // init daily-daily-reconciliation-builder contracts
     // sign contracts
-    const reconciliationId = uuidv4();
     const iat = dayjs();
     const contractPayload = new DailyReconciliationContractPayload({
       iss: this.id,
