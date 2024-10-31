@@ -144,7 +144,7 @@ export class ResolveReconciliationService {
         return;
       } else {
         return this.signContractAndSendEvent({
-          status: DailyReconciliationResolveStatus.MISMATCHED,
+          status: DailyReconciliationResolveStatus.FAILED,
           message: 'Data mismatch',
         });
       }

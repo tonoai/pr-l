@@ -181,6 +181,11 @@ export default class Column extends TableColumn {
   }
 
   setDefault(value: any) {
+    if (this.type === 'timestamp') {
+      this.default = value;
+
+      return this;
+    }
     this.default = typeof value === 'string' ? `'${value}'` : value;
 
     return this;

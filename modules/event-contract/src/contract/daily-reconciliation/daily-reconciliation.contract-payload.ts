@@ -38,7 +38,6 @@ export class DailyReconciliationContractPayload extends BaseContractPayload {
 
 export enum DailyReconciliationResolveStatus {
   RECONCILED = 'reconciled',
-  MISMATCHED = 'mismatched',
   FAILED = 'failed',
 }
 

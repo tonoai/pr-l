@@ -110,7 +110,7 @@ export class FinalizeReconciliationService {
         reconciledAt: dayjs.unix(protectedHeaderResult.reconciledAt!).toDate(),
       });
     }
-    if (protectedHeaderResult.status === DailyReconciliationResolveStatus.MISMATCHED) {
+    if (protectedHeaderResult.status === DailyReconciliationResolveStatus.FAILED) {
       const requestReconciliationService = await RequestReconciliationService.create({
         dataBuilder: this.dataService.dataBuilder,
         requestBuilder: this.requestService.requestBuilder,
