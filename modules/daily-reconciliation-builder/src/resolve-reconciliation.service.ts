@@ -81,6 +81,13 @@ export class ResolveReconciliationService {
   }
 
   async execute() {
+    console.log({
+      id: this.requestContractPayload.contractId,
+      date: this.date,
+      partnerId: this.partnerId,
+      status: 'processing',
+      contract: this.requestContract.data,
+    });
     await this.reconciliationBuilder.upsertReconciliation({
       id: this.requestContractPayload.contractId,
       date: this.date,

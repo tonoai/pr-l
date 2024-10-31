@@ -91,6 +91,8 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
         error: exception.toString(),
       };
     }
+
+    this.logger.warn('Handled and formated error', formattedResponse);
     response.status(formattedResponse.statusCode).send({
       ...formattedResponse,
       stack: isDebug ? exception['stack'] : undefined,

@@ -102,6 +102,7 @@ export class RequestReconciliationService {
       sub: this.partnerId,
       contractId: reconciliationId,
       stats: this.dataService.data.statsDataset,
+      date: this.date.toISOString(),
       // Todo: ensure fileId later
       // fileId: attachmentId,
     });
