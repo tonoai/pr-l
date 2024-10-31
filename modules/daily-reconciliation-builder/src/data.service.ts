@@ -14,12 +14,13 @@ import { compactDecrypt, CompactEncrypt } from 'jose';
 import type { DataBuilderInterface } from './types/data-builder.interface';
 import { CompareDatasetUtils } from '@pressingly-modules/daily-reconciliation-builder/src/utils/compare-dataset.utils';
 import { DailyReconciliationMismatchType } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
+import type * as dayjs from 'dayjs';
 
 export interface DataServiceConfigs {
   dataBuilder: DataBuilderInterface;
   key: PrivateKeyInterface;
   partnerKey: PublicKeyInterface;
-  date: Date;
+  date: dayjs.Dayjs;
   partnerId: string;
   isPrimary?: boolean;
 }
@@ -28,7 +29,7 @@ export class DataService {
   public readonly dataBuilder: DataBuilderInterface;
   private readonly key: PrivateKeyInterface;
   private readonly partnerKey: PublicKeyInterface;
-  private readonly date: Date;
+  private readonly date: dayjs.Dayjs;
   private readonly partnerId: string;
   private readonly isPrimary: boolean;
   data!: ReconciliationDatasetInterface;
@@ -52,10 +53,10 @@ export class DataService {
 
   async loadOwnData(): Promise<this> {
     this.data = await Promise.all([
-      this.dataBuilder.getSubscriptionCharges(this.partnerId, this.date),
-      this.dataBuilder.getNewDisputes(this.partnerId, this.date),
-      this.dataBuilder.getFinalizedDisputes(this.partnerId, this.date),
-      this.dataBuilder.getStats(this.partnerId, this.date),
+      this.dataBuilder.getSubscriptionCharges(this.partnerId, this.date.toDate()),
+      this.dataBuilder.getNewDisputes(this.partnerId, this.date.toDate()),
+      this.dataBuilder.getFinalizedDisputes(this.partnerId, this.date.toDate()),
+      this.dataBuilder.getStats(this.partnerId, this.date.toDate()),
     ]).then(
       ([subscriptionChargeDataset, newDisputeDataset, finalizedDisputeDataset, statsDataset]) => ({
         subscriptionChargeDataset,
@@ -133,7 +134,7 @@ export class DataService {
         this.data.finalizedDisputeDataset,
         this.data.finalizedDisputeDataset,
       );
-    const statsMismatch: DailyReconciliationMismatch<StatsDatasetInterface>[] =
+    const statsMismatches: DailyReconciliationMismatch<StatsDatasetInterface>[] =
       CompareDatasetUtils.compareDatasets(
         'statsDataset',
         this.data.statsDataset,
@@ -143,15 +144,17 @@ export class DataService {
       subscriptionChargeMismatches.length ||
       newDisputeMismatches.length ||
       finalizedDisputeMismatches.length ||
-      statsMismatch
+      statsMismatches.length
     ) {
       this.dataMismatch = {
         subscriptionCharge: subscriptionChargeMismatches,
         newDispute: newDisputeMismatches,
         finalizedDispute: finalizedDisputeMismatches,
-        stats: statsMismatch,
+        stats: statsMismatches,
         isMismatched: true,
       };
+
+      return false;
     }
 
     return true;

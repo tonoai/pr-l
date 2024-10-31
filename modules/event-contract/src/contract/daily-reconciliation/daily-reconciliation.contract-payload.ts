@@ -44,5 +44,6 @@ export enum DailyReconciliationResolveStatus {
 
 export interface DailyReconciliationResolveProtectedHeader extends JWSHeaderParameters {
   status: DailyReconciliationResolveStatus;
+  reconciledAt?: number;
   message?: string;
 }

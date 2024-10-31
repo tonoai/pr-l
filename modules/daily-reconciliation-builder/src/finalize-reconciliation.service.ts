@@ -13,6 +13,7 @@ import { DailyReconciliationStatus } from '@pressingly-modules/daily-reconciliat
 import { RequestReconciliationService } from '@pressingly-modules/daily-reconciliation-builder/src/request-reconciliation.service';
 import type { ReconciliationBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-builder.interface';
 import type { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
+import * as dayjs from 'dayjs';
 
 export interface FinalizeReconciliationServiceConfigs extends ResolveReconciliationServiceConfigs {
   key: Required<KeyInterface>;
@@ -26,7 +27,7 @@ export class FinalizeReconciliationService {
   private readonly partnerKey: PublicKeyInterface;
   private readonly id: string;
   private readonly partnerId: string;
-  private readonly date: Date;
+  private readonly date: dayjs.Dayjs;
   private readonly requestContract: DailyReconciliationContract;
   private readonly requestContractPayload: DailyReconciliationContractPayload;
 
@@ -37,7 +38,7 @@ export class FinalizeReconciliationService {
     this.requestContract = configs.requestContract;
     this.requestContractPayload = this.requestContract.getPayload();
     this.partnerId = this.requestContractPayload.iss;
-    this.date = new Date(this.requestContractPayload.date);
+    this.date = dayjs(this.requestContractPayload.date);
     this.dataService = new DataService({
       dataBuilder: configs.dataBuilder,
       key: this.key,
@@ -106,6 +107,7 @@ export class FinalizeReconciliationService {
         id: this.requestContractPayload.contractId,
         status: DailyReconciliationStatus.RECONCILED,
         contract: this.requestContract.data,
+        reconciledAt: dayjs(protectedHeaderResult.reconciledAt).toDate(),
       });
     }
     if (protectedHeaderResult.status === DailyReconciliationResolveStatus.MISMATCHED) {
@@ -116,7 +118,7 @@ export class FinalizeReconciliationService {
         id: this.id,
         partnerId: this.partnerId,
         key: this.key,
-        date: this.date,
+        date: this.date.toDate(),
       });
 
       // no need to await here

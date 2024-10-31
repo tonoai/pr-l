@@ -4,10 +4,11 @@ import type { DailyReconciliationResponsePinetEvent } from '@pressingly-modules/
 import type { EncryptedReconciliationDatasetInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-dataset.interface';
 import type { EventResponse } from '@pressingly-modules/event-contract/src/events/types/event-response';
 import * as JSZip from 'jszip';
+import type * as dayjs from 'dayjs';
 
 export interface RequestServiceConfigs {
   requestBuilder: RequestBuilderInterface;
-  date: Date;
+  date: dayjs.Dayjs;
   id: string;
   partnerId: string;
   partnerKid: string;
@@ -15,7 +16,7 @@ export interface RequestServiceConfigs {
 
 export class RequestService {
   public requestBuilder: RequestBuilderInterface;
-  private readonly date: Date;
+  private readonly date: dayjs.Dayjs;
   private readonly partnerId: string;
   private readonly partnerKid: string;
   private readonly id: string;
@@ -32,7 +33,7 @@ export class RequestService {
     const { uploadUrl, attachmentId } = await this.requestBuilder.getUploadInfo(
       this.partnerId,
       this.partnerKid,
-      this.date,
+      this.date.toDate(),
     );
 
     const zip = new JSZip();
@@ -60,12 +61,21 @@ export class RequestService {
 
   async download(): Promise<EncryptedReconciliationDatasetInterface | null> {
     try {
-      const { downloadUrl } = await this.requestBuilder.getDownloadInfo(this.partnerId, this.date);
+      const { downloadUrl } = await this.requestBuilder.getDownloadInfo(
+        this.partnerId,
+        this.date.toDate(),
+      );
 
       const response = await fetch(downloadUrl);
 
       const blob = await response.blob();
-      const textContent = await blob.text();
+      const zip = new JSZip();
+      const zipContent = await zip.loadAsync(blob.arrayBuffer());
+      const file = zipContent.file('encrypted_data.jwe');
+      if (!file) {
+        return null;
+      }
+      const textContent = await file.async('text');
       const encryptedData = JSON.parse(textContent);
 
       return encryptedData as EncryptedReconciliationDatasetInterface;

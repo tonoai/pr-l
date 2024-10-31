@@ -18,7 +18,7 @@ export class CompareDatasetUtils {
   ): DailyReconciliationMismatch<any>[] {
     const mismatches: DailyReconciliationMismatch<any>[] = [];
     if (dataset === 'statsDataset') {
-      if (CompareDatasetUtils.areObjectsEqual(array1, array2)) {
+      if (!CompareDatasetUtils.areObjectsEqual(array1, array2)) {
         mismatches.push({
           refType: DailyReconciliationMismatchRefType.STATS,
           data: array1 as StatsDatasetInterface,

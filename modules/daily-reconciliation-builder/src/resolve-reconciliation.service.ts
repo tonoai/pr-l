@@ -12,6 +12,7 @@ import {
 import { DailyReconciliationResponsePinetEvent } from '@pressingly-modules/event-contract/src/events/daily-reconciliation-response.-pinet-event';
 import type { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
 import type { ReconciliationBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-builder.interface';
+import * as dayjs from 'dayjs';
 
 export interface ResolveReconciliationServiceConfigs {
   dataBuilder: DataBuilderInterface;
@@ -32,7 +33,7 @@ export class ResolveReconciliationService {
   private readonly partnerKey: PublicKeyInterface;
   private readonly id: string;
   private readonly partnerId: string;
-  private readonly date: Date;
+  private readonly date: dayjs.Dayjs;
   private readonly requestContract: DailyReconciliationContract;
   private readonly requestContractPayload: DailyReconciliationContractPayload;
   private readonly isPrimary: boolean;
@@ -44,7 +45,7 @@ export class ResolveReconciliationService {
     this.requestContract = configs.requestContract;
     this.requestContractPayload = this.requestContract.getPayload();
     this.partnerId = this.requestContractPayload.iss;
-    this.date = new Date(this.requestContractPayload.date);
+    this.date = dayjs(this.requestContractPayload.date);
     this.isPrimary = configs.isPrimary ?? false;
     this.dataService = new DataService({
       dataBuilder: configs.dataBuilder,
@@ -52,6 +53,7 @@ export class ResolveReconciliationService {
       partnerKey: this.partnerKey,
       date: this.date,
       partnerId: this.partnerId,
+      isPrimary: this.isPrimary,
     });
     this.requestService = new RequestService({
       requestBuilder: configs.requestBuilder,
@@ -81,25 +83,21 @@ export class ResolveReconciliationService {
   }
 
   async execute() {
-    console.log({
-      id: this.requestContractPayload.contractId,
-      date: this.date,
-      partnerId: this.partnerId,
-      status: 'processing',
-      contract: this.requestContract.data,
-    });
     await this.reconciliationBuilder.upsertReconciliation({
       id: this.requestContractPayload.contractId,
-      date: this.date,
+      date: this.date.toDate(),
       partnerId: this.partnerId,
       status: 'processing',
       contract: this.requestContract.data,
+      issuedAt: dayjs(this.requestContractPayload.iat).toDate(),
     });
     try {
       await this.requestContract.transformAndValidate(DailyReconciliationContractPayload);
       await this.requestContract.verifySomeSignatures(2, [
-        this.requestService.requestBuilder.getPublicKey,
-        this.requestService.requestBuilder.getPinetCorePublicKey,
+        this.requestService.requestBuilder.getPublicKey.bind(this.requestService.requestBuilder),
+        this.requestService.requestBuilder.getPinetCorePublicKey.bind(
+          this.requestService.requestBuilder,
+        ),
       ]);
     } catch (err) {
       return this.signContractAndSendEvent({
@@ -160,14 +158,21 @@ export class ResolveReconciliationService {
   private async signContractAndSendEvent(
     protectedHeader: DailyReconciliationResolveProtectedHeader,
   ) {
+    const now = dayjs();
+    const reconciliationData = {
+      id: this.requestContractPayload.contractId,
+      status: protectedHeader.status,
+      message: protectedHeader.message,
+      contract: this.requestContract.data,
+    } as Record<string, any>;
+    if (protectedHeader.status === DailyReconciliationResolveStatus.RECONCILED) {
+      protectedHeader.reconciledAt = now.unix();
+      reconciliationData.reconciledAt = now.toDate();
+    }
     await this.requestContract.sign(this.key.privateKey, protectedHeader, {
       kid: this.key.kid,
     });
-    await this.reconciliationBuilder.upsertReconciliation({
-      id: this.requestContractPayload.contractId,
-      status: protectedHeader.status,
-      contract: this.requestContract.data,
-    });
+    await this.reconciliationBuilder.upsertReconciliation(reconciliationData);
 
     // init moneta event with contracts data
     const event = new DailyReconciliationResponsePinetEvent({

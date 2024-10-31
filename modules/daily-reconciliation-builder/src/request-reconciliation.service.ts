@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { DailyReconciliationRequestPinetEvent } from '@pressingly-modules/event-contract/src/events/daily-reconciliation-request.pinet-event';
 import type { PrivateKeyInterface, PublicKeyInterface } from './types/key.interface';
 import type { ReconciliationBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-builder.interface';
+import * as dayjs from 'dayjs';
 
 export interface RequestReconciliationServiceConfigs {
   dataBuilder: DataBuilderInterface;
@@ -29,7 +30,7 @@ export class RequestReconciliationService {
   private readonly partnerKey: PublicKeyInterface;
   private readonly id: string;
   private readonly partnerId: string;
-  private readonly date: Date;
+  private readonly date: dayjs.Dayjs;
   // Todo: restrict this isPrimary logic: 2 services should not be primary at the same time
   private readonly isPrimary: boolean;
 
@@ -37,7 +38,7 @@ export class RequestReconciliationService {
   private constructor(configs: RequestReconciliationServiceConfigs) {
     this.id = configs.id;
     this.partnerId = configs.partnerId;
-    this.date = configs.date ?? new Date();
+    this.date = configs.date ? dayjs(configs.date) : dayjs();
     this.key = configs.key;
     this.partnerKey = configs.partnerKey;
     this.isPrimary = configs.isPrimary ?? false;
@@ -95,9 +96,12 @@ export class RequestReconciliationService {
     // init daily-daily-reconciliation-builder contracts
     // sign contracts
     const reconciliationId = uuidv4();
+    const iat = dayjs();
     const contractPayload = new DailyReconciliationContractPayload({
       iss: this.id,
       aud: this.partnerId,
+      iat: iat.unix(),
+      exp: iat.add(30, 'minutes').unix(),
       // Todo: what is sub here?
       sub: this.partnerId,
       contractId: reconciliationId,
@@ -116,7 +120,7 @@ export class RequestReconciliationService {
       attachmentId,
       date: this.date,
       status: 'processing',
-      issuedAt: new Date(contractPayload.iat),
+      issuedAt: iat.toDate(),
     });
 
     const event = new DailyReconciliationRequestPinetEvent({
