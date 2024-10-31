@@ -14,7 +14,7 @@ import { compactDecrypt, CompactEncrypt } from 'jose';
 import type { DataBuilderInterface } from './types/data-builder.interface';
 import { CompareDatasetUtils } from '@pressingly-modules/daily-reconciliation-builder/src/utils/compare-dataset.utils';
 import { DailyReconciliationMismatchType } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
-import { SubscriptionChargeContract } from '@pressingly-modules/event-contract/src/contract/contracts/subscription-charge/subscription-charge.contract';
+import { SubscriptionChargeContract } from '@pressingly-modules/event-contract/src/contract/subscription-charge/subscription-charge.contract';
 
 export interface DataServiceConfigs {
   dataBuilder: DataBuilderInterface;

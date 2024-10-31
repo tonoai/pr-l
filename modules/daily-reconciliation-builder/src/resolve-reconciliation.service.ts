@@ -3,12 +3,12 @@ import { RequestService } from './request.service';
 import { DataService } from './data.service';
 import type { DataBuilderInterface } from './types/data-builder.interface';
 import type { RequestBuilderInterface } from './types/request-builder-interface';
-import { DailyReconciliationContract } from '@pressingly-modules/event-contract/src/contract/contracts/daily-reconciliation/daily-reconciliation.contract';
-import type { DailyReconciliationResolveProtectedHeader } from '@pressingly-modules/event-contract/src/contract/contracts/daily-reconciliation/daily-reconciliation.contract-payload';
+import { DailyReconciliationContract } from '@pressingly-modules/event-contract/src/contract/daily-reconciliation/daily-reconciliation.contract';
+import type { DailyReconciliationResolveProtectedHeader } from '@pressingly-modules/event-contract/src/contract/daily-reconciliation/daily-reconciliation.contract-payload';
 import {
   DailyReconciliationContractPayload,
   DailyReconciliationResolveStatus,
-} from '@pressingly-modules/event-contract/src/contract/contracts/daily-reconciliation/daily-reconciliation.contract-payload';
+} from '@pressingly-modules/event-contract/src/contract/daily-reconciliation/daily-reconciliation.contract-payload';
 import { DailyReconciliationResponseEvent } from '../../event-contract/src/events/daily-reconciliation-response.event';
 import type { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
 import type { ReconciliationBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-builder.interface';

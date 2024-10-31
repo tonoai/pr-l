@@ -1,4 +1,4 @@
-import { BaseContract } from '../../base.contract';
+import { BaseContract } from '../base.contract';
 import type { DisputeRequestContractPayload } from './dispute-request.contract-payload';
 
 export class DisputeRequestContract extends BaseContract<DisputeRequestContractPayload> {

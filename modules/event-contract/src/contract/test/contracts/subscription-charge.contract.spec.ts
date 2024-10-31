@@ -1,6 +1,6 @@
 import { plainToInstance } from 'class-transformer';
-import { CreateSubscriptionChargeContractPayload } from '../../contracts/subscription-charge/create-subscription-charge.contract-payload';
-import { SubscriptionChargeContract } from '../../contracts/subscription-charge/subscription-charge.contract';
+import { CreateSubscriptionChargeContractPayload } from '@pressingly-modules/event-contract/src/contract/subscription-charge/create-subscription-charge.contract-payload';
+import { SubscriptionChargeContract } from '@pressingly-modules/event-contract/src/contract/subscription-charge/subscription-charge.contract';
 
 describe('SubscriptionChargeContract', () => {
   let contract: SubscriptionChargeContract<CreateSubscriptionChargeContractPayload>;

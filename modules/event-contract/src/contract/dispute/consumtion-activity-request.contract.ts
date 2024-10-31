@@ -1,7 +1,7 @@
 import type { JWSHeaderParameters } from 'jose';
 import { CompactEncrypt } from 'jose';
 import type { KeyObject } from 'crypto';
-import { BaseContract } from '../../base.contract';
+import { BaseContract } from '../base.contract';
 import type { ConsumptionActivityRequestContractPayload } from './consumption-activity-request.contract-payload';
 
 // eslint-disable-next-line max-len

@@ -1,7 +1,7 @@
 import { plainToInstance } from 'class-transformer';
 import { v4 as uuidv4 } from 'uuid';
-import { DisputeRequestContract } from '../../contracts/dispute/dispute-request.contract';
-import { DisputeRequestContractPayload } from '../../contracts/dispute/dispute-request.contract-payload';
+import { DisputeRequestContract } from '@pressingly-modules/event-contract/src/contract/dispute/dispute-request.contract';
+import { DisputeRequestContractPayload } from '@pressingly-modules/event-contract/src/contract/dispute/dispute-request.contract-payload';
 
 describe('DisputeRequestContract', () => {
   let contract: DisputeRequestContract;

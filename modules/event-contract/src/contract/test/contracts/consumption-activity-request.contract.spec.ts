@@ -2,8 +2,8 @@ import { plainToInstance } from 'class-transformer';
 import { v4 as uuidv4 } from 'uuid';
 import { generateKeyPairSync } from 'crypto';
 import type { JWSHeaderParameters } from 'jose';
-import { ConsumptionActivityRequestContract } from '../../contracts/dispute/consumtion-activity-request.contract';
-import { ConsumptionActivityRequestContractPayload } from '../../contracts/dispute/consumption-activity-request.contract-payload';
+import { ConsumptionActivityRequestContract } from '@pressingly-modules/event-contract/src/contract/dispute/consumtion-activity-request.contract';
+import { ConsumptionActivityRequestContractPayload } from '@pressingly-modules/event-contract/src/contract/dispute/consumption-activity-request.contract-payload';
 
 describe('ConsumptionActivityRequestContract', () => {
   let contract: ConsumptionActivityRequestContract;

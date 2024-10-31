@@ -1,6 +1,6 @@
 import type { CreateSubscriptionChargeContractPayload } from './create-subscription-charge.contract-payload';
 import type { FinalizeSubscriptionChargeContractPayload } from './finalize-subscription-charge.contract-payload';
-import { BaseEncryptedContract } from '../../base-encrypted.contract';
+import { BaseEncryptedContract } from '../base-encrypted.contract';
 
 export class SubscriptionChargeContract<
   T extends CreateSubscriptionChargeContractPayload | FinalizeSubscriptionChargeContractPayload,
