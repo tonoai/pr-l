@@ -21,6 +21,7 @@ export interface ResolveReconciliationServiceConfigs {
   partnerKey: PublicKeyInterface;
   id: string;
   requestContract: DailyReconciliationContract;
+  isPrimary?: boolean;
 }
 
 export class ResolveReconciliationService {
@@ -34,6 +35,7 @@ export class ResolveReconciliationService {
   private readonly date: Date;
   private readonly requestContract: DailyReconciliationContract;
   private readonly requestContractPayload: DailyReconciliationContractPayload;
+  private readonly isPrimary: boolean;
 
   private constructor(configs: ResolveReconciliationServiceConfigs) {
     this.id = configs.id;
@@ -43,6 +45,7 @@ export class ResolveReconciliationService {
     this.requestContractPayload = this.requestContract.getPayload();
     this.partnerId = this.requestContractPayload.iss;
     this.date = new Date(this.requestContractPayload.date);
+    this.isPrimary = configs.isPrimary ?? false;
     this.dataService = new DataService({
       dataBuilder: configs.dataBuilder,
       key: this.key,
