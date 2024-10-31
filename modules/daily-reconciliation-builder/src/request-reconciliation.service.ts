@@ -5,7 +5,7 @@ import type { RequestBuilderInterface } from './types/request-builder-interface'
 import { DailyReconciliationContract } from '@pressingly-modules/event-contract/src/contract/daily-reconciliation/daily-reconciliation.contract';
 import { DailyReconciliationContractPayload } from '@pressingly-modules/event-contract/src/contract/daily-reconciliation/daily-reconciliation.contract-payload';
 import { v4 as uuidv4 } from 'uuid';
-import { DailyReconciliationRequestEvent } from '../../event-contract/src/events/daily-reconciliation-request.event';
+import { DailyReconciliationRequestPinetEvent } from '@pressingly-modules/event-contract/src/events/daily-reconciliation-request.pinet-event';
 import type { PrivateKeyInterface, PublicKeyInterface } from './types/key.interface';
 import type { ReconciliationBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-builder.interface';
 
@@ -18,6 +18,7 @@ export interface RequestReconciliationServiceConfigs {
   partnerId: string;
   id: string;
   date?: Date;
+  isPrimary?: boolean;
 }
 
 export class RequestReconciliationService {
@@ -29,6 +30,8 @@ export class RequestReconciliationService {
   private readonly id: string;
   private readonly partnerId: string;
   private readonly date: Date;
+  // Todo: restrict this isPrimary logic: 2 services should not be primary at the same time
+  private readonly isPrimary: boolean;
 
   // Not allow to new instance directly, should use static method create, for async constructor
   private constructor(configs: RequestReconciliationServiceConfigs) {
@@ -37,12 +40,14 @@ export class RequestReconciliationService {
     this.date = configs.date ?? new Date();
     this.key = configs.key;
     this.partnerKey = configs.partnerKey;
+    this.isPrimary = configs.isPrimary ?? false;
     this.dataService = new DataService({
       dataBuilder: configs.dataBuilder,
       key: this.key,
       partnerKey: this.partnerKey,
       date: this.date,
       partnerId: this.partnerId,
+      isPrimary: this.isPrimary,
     });
     this.requestService = new RequestService({
       requestBuilder: configs.requestBuilder,
@@ -64,13 +69,8 @@ export class RequestReconciliationService {
   }
 
   async execute() {
-    // build own data
-    await this.dataService.loadOwnData();
-
-    // download data from partner
     const encryptedPartnerData = await this.requestService.download();
     if (encryptedPartnerData) {
-      // decrypt data and inject to service
       await this.dataService.loadPartnerData(encryptedPartnerData);
 
       if (!this.dataService.compareData()) {
@@ -86,9 +86,11 @@ export class RequestReconciliationService {
       }
     }
 
+    // build own data
+    await this.dataService.loadOwnData();
     const encryptedOwnData = await this.dataService.encryptOwnData();
     // upload data to s3 via monetaService
-    await this.requestService.upload(encryptedOwnData);
+    const attachmentId = await this.requestService.upload(encryptedOwnData);
 
     // init daily-daily-reconciliation-builder contracts
     // sign contracts
@@ -98,32 +100,32 @@ export class RequestReconciliationService {
       aud: this.partnerId,
       // Todo: what is sub here?
       sub: this.partnerId,
-      // Todo: should use daily-daily-reconciliation-builder record id
       contractId: reconciliationId,
       stats: this.dataService.data.statsDataset,
+      // Todo: ensure fileId later
+      // fileId: attachmentId,
     });
     const contract = new DailyReconciliationContract(contractPayload);
-    await contract.sign(this.key.privateKey);
-    // Todo: create daily-daily-reconciliation-builder record with contracts data
+    await contract.sign(this.key.privateKey, {}, { kid: this.key.kid });
+
     await this.reconciliationBuilder.upsertReconciliation({
-      reconciliationId,
+      id: reconciliationId,
       contract: contract.data,
       partnerId: this.partnerId,
+      attachmentId,
       date: this.date,
       status: 'processing',
       issuedAt: new Date(contractPayload.iat),
     });
 
-    // init moneta event with contracts data
-    const event = new DailyReconciliationRequestEvent({
+    const event = new DailyReconciliationRequestPinetEvent({
       payload: {
         contract: contract.data,
       },
     });
-    // send daily-daily-reconciliation-builder request to monetaService
     const sendEventRes = await this.requestService.send(event);
     await this.reconciliationBuilder.upsertReconciliation({
-      reconciliationId,
+      id: reconciliationId,
       contract: sendEventRes.contract,
     });
   }

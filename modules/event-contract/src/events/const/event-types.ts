@@ -5,3 +5,5 @@ export const EVENT_DISPUTE_RESPONSE = 'DisputeResponse';
 export const EVENT_DISPUTE_RESOLUTION = 'DisputeResolution';
 export const EVENT_CONSUMPTION_ACTIVITY_REQUEST = 'ConsumptionActivityRequest';
 export const EVENT_CONSUMPTION_ACTIVITY_RESPONSE = 'ConsumptionActivityResponse';
+export const EVENT_DAILY_RECONCILIATION_REQUEST = 'DailyReconciliationRequest';
+export const EVENT_DAILY_RECONCILIATION_RESPONSE = 'DailyReconciliationResponse';

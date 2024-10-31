@@ -1,9 +1,6 @@
 import type { MigrationInterface, QueryRunner } from 'typeorm';
 import { Schema } from '@pressingly-modules/core/src/database/schema/schema';
-import Column, {
-  STRING_LENGTH,
-  STRING_LONG_LENGTH,
-} from '@pressingly-modules/core/src/database/schema/column';
+import Column, { STRING_LENGTH } from '@pressingly-modules/core/src/database/schema/column';
 
 export class CreateDailyReconciliationTable1730131783789 implements MigrationInterface {
   private tableName = 'daily_reconciliations';
@@ -14,8 +11,8 @@ export class CreateDailyReconciliationTable1730131783789 implements MigrationInt
         Column.uuid('id').setPrimary(),
         Column.uuid('partner_id'),
         Column.timestamp('date').setDefault('now()'),
-        Column.string('file_url', STRING_LONG_LENGTH).nullable(),
-        Column.string('partner_file_url', STRING_LONG_LENGTH).nullable(),
+        Column.uuid('attachment_id').nullable(),
+        Column.uuid('partner_attachment_id').nullable(),
         Column.enum('status', ['processing', 'reconciled', 'failed']).setDefault('processing'),
         Column.string('message', STRING_LENGTH).nullable(),
         Column.jsonb('contract'),

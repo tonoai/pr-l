@@ -14,7 +14,6 @@ import { compactDecrypt, CompactEncrypt } from 'jose';
 import type { DataBuilderInterface } from './types/data-builder.interface';
 import { CompareDatasetUtils } from '@pressingly-modules/daily-reconciliation-builder/src/utils/compare-dataset.utils';
 import { DailyReconciliationMismatchType } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
-import { SubscriptionChargeContract } from '@pressingly-modules/event-contract/src/contract/subscription-charge/subscription-charge.contract';
 
 export interface DataServiceConfigs {
   dataBuilder: DataBuilderInterface;
@@ -22,21 +21,16 @@ export interface DataServiceConfigs {
   partnerKey: PublicKeyInterface;
   date: Date;
   partnerId: string;
-}
-
-export interface ConflictInterface {
-  index: number;
-  data: SubscriptionChargeDatasetInterface;
-  partnerIndex: number;
-  partnerData: SubscriptionChargeDatasetInterface;
+  isPrimary?: boolean;
 }
 
 export class DataService {
-  public dataBuilder: DataBuilderInterface;
-  private key: PrivateKeyInterface;
-  private partnerKey: PublicKeyInterface;
-  private date: Date;
-  private partnerId: string;
+  public readonly dataBuilder: DataBuilderInterface;
+  private readonly key: PrivateKeyInterface;
+  private readonly partnerKey: PublicKeyInterface;
+  private readonly date: Date;
+  private readonly partnerId: string;
+  private readonly isPrimary: boolean;
   data!: ReconciliationDatasetInterface;
   partnerData!: ReconciliationDatasetInterface;
   dataMismatch: ReconciliationMismatchInterface = {
@@ -53,6 +47,7 @@ export class DataService {
     this.partnerKey = configs.partnerKey;
     this.date = configs.date;
     this.partnerId = configs.partnerId;
+    this.isPrimary = configs.isPrimary ?? false;
   }
 
   async loadOwnData(): Promise<this> {
@@ -169,37 +164,44 @@ export class DataService {
     // reset conflict data/ owner data/ partner data
 
     if (this.dataMismatch.isMismatched) {
+      if (this.isPrimary) {
+        // no need to resolve conflict
+        // when you are primary, you are always right
+        return false;
+      }
       if (this.dataMismatch.subscriptionCharge.length) {
         // resolve subscription charge conflict
-        this.dataMismatch.subscriptionCharge.forEach(mismatch => {
-          if (
-            mismatch.type === DailyReconciliationMismatchType.MISSING ||
-            mismatch.type === DailyReconciliationMismatchType.REDUNDANT
-          ) {
-            throw new Error('Not implement resolving for missing and redundant yet');
+        for (const mismatch of this.dataMismatch.subscriptionCharge) {
+          if (mismatch.type === DailyReconciliationMismatchType.MISSING) {
+            await this.dataBuilder.deleteSubscriptionCharge(this.partnerId, mismatch.data!);
+          }
+
+          if (mismatch.type === DailyReconciliationMismatchType.REDUNDANT) {
+            await this.dataBuilder.createSubscriptionCharge(this.partnerId, mismatch.data!);
           }
 
           if (mismatch.type === DailyReconciliationMismatchType.CONFLICTED) {
-            const contract = new SubscriptionChargeContract().fromJWS(
-              mismatch.data!.finalizedContract,
-            );
-            const partnerContract = new SubscriptionChargeContract().fromJWS(
-              mismatch.partnerData!.finalizedContract,
-            );
+            // Todo: verify 2 contracts before action
+            // const contract = new SubscriptionChargeContract().fromJWS(
+            //   mismatch.data!.finalizedContract,
+            // );
+            // const partnerContract = new SubscriptionChargeContract().fromJWS(
+            //   mismatch.partnerData!.finalizedContract,
+            // );
             // if 2 contract difference
             // verify 2 contracts
             // choose the correct and latest one
             // compare contract data with extracted data of both mismatch and partner mismatch
             // update the onw data if needed?? but how?
             // What happen if 2 contracts are correct?
-
             // if 2 contracts are the same
             // compare contract data with extracted data of both mismatch and partner mismatch
           }
 
           // Todo: the big question is how to update own data?
           // if resolve conflict automatically, how to update partner data?
-        });
+          await this.dataBuilder.updateSubscriptionCharge(this.partnerId, mismatch.data!);
+        }
       }
     }
 

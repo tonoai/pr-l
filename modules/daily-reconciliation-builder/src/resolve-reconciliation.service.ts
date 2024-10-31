@@ -9,7 +9,7 @@ import {
   DailyReconciliationContractPayload,
   DailyReconciliationResolveStatus,
 } from '@pressingly-modules/event-contract/src/contract/daily-reconciliation/daily-reconciliation.contract-payload';
-import { DailyReconciliationResponseEvent } from '../../event-contract/src/events/daily-reconciliation-response.event';
+import { DailyReconciliationResponsePinetEvent } from '@pressingly-modules/event-contract/src/events/daily-reconciliation-response.-pinet-event';
 import type { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
 import type { ReconciliationBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-builder.interface';
 
@@ -19,9 +19,8 @@ export interface ResolveReconciliationServiceConfigs {
   reconciliationBuilder: ReconciliationBuilderInterface;
   key: PrivateKeyInterface;
   partnerKey: PublicKeyInterface;
-  partnerId: string;
   id: string;
-  requestContract: PinetContract;
+  requestContract: DailyReconciliationContract;
 }
 
 export class ResolveReconciliationService {
@@ -38,11 +37,11 @@ export class ResolveReconciliationService {
 
   private constructor(configs: ResolveReconciliationServiceConfigs) {
     this.id = configs.id;
-    this.partnerId = configs.partnerId;
     this.key = configs.key;
     this.partnerKey = configs.partnerKey;
-    this.requestContract = new DailyReconciliationContract().fromJWS(configs.requestContract);
+    this.requestContract = configs.requestContract;
     this.requestContractPayload = this.requestContract.getPayload();
+    this.partnerId = this.requestContractPayload.iss;
     this.date = new Date(this.requestContractPayload.date);
     this.dataService = new DataService({
       dataBuilder: configs.dataBuilder,
@@ -61,11 +60,19 @@ export class ResolveReconciliationService {
     this.reconciliationBuilder = configs.reconciliationBuilder;
   }
 
-  static async create(configs: Omit<ResolveReconciliationServiceConfigs, 'partnerKey'>) {
-    const partnerKey = await configs.requestBuilder.getPartnerPublicKey(configs.partnerId);
+  static async create(
+    configs: Omit<ResolveReconciliationServiceConfigs, 'partnerKey' | 'requestContract'> & {
+      requestContract: PinetContract;
+    },
+  ) {
+    const requestContract = new DailyReconciliationContract().fromJWS(configs.requestContract);
+    const partnerKey = await configs.requestBuilder.getPartnerPublicKey(
+      requestContract.getPayload().iss,
+    );
 
     return new ResolveReconciliationService({
       ...configs,
+      requestContract,
       partnerKey,
     });
   }
@@ -75,7 +82,7 @@ export class ResolveReconciliationService {
       id: this.requestContractPayload.contractId,
       date: this.date,
       partnerId: this.partnerId,
-      status: 'pending',
+      status: 'processing',
       contract: this.requestContract.data,
     });
     try {
@@ -103,13 +110,11 @@ export class ResolveReconciliationService {
       // decrypt data and inject to service
       await this.dataService.loadPartnerData(encryptedPartnerData);
     } catch (err) {
-      // TOdo: store the daily-daily-reconciliation-builder record with failed status
       return this.signContractAndSendEvent({
         status: DailyReconciliationResolveStatus.FAILED,
         message: 'Failed to decrypt partner data',
       });
     }
-    // TOdo, upload data after resolve conflict
     await this.dataService.loadOwnData();
     const encryptedOwnData = await this.dataService.encryptOwnData();
     // upload data to s3 via monetaService
@@ -155,7 +160,7 @@ export class ResolveReconciliationService {
     });
 
     // init moneta event with contracts data
-    const event = new DailyReconciliationResponseEvent({
+    const event = new DailyReconciliationResponsePinetEvent({
       payload: {
         contract: this.requestContract.data,
       },

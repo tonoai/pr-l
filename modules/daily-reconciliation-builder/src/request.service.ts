@@ -1,8 +1,9 @@
 import type { RequestBuilderInterface } from './types/request-builder-interface';
-import type { DailyReconciliationRequestEvent } from '../../event-contract/src/events/daily-reconciliation-request.event';
-import type { DailyReconciliationResponseEvent } from '../../event-contract/src/events/daily-reconciliation-response.event';
+import type { DailyReconciliationRequestPinetEvent } from '@pressingly-modules/event-contract/src/events/daily-reconciliation-request.pinet-event';
+import type { DailyReconciliationResponsePinetEvent } from '@pressingly-modules/event-contract/src/events/daily-reconciliation-response.-pinet-event';
 import type { EncryptedReconciliationDatasetInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-dataset.interface';
 import type { EventResponse } from '@pressingly-modules/event-contract/src/events/types/event-response';
+import * as JSZip from 'jszip';
 
 export interface RequestServiceConfigs {
   requestBuilder: RequestBuilderInterface;
@@ -27,45 +28,54 @@ export class RequestService {
     this.partnerKid = configs.partnerKid;
   }
 
-  async upload(data: EncryptedReconciliationDatasetInterface): Promise<void> {
-    const uploadLink = await this.requestBuilder.getUploadLink(
+  async upload(data: EncryptedReconciliationDatasetInterface): Promise<string> {
+    const { uploadUrl, attachmentId } = await this.requestBuilder.getUploadInfo(
       this.partnerId,
       this.partnerKid,
       this.date,
     );
 
-    console.log(uploadLink);
+    const zip = new JSZip();
 
-    // Todo: store to local storage before upload
-    const blob = new Blob([JSON.stringify(data)], { type: 'application/octet-stream' });
+    // Todo: store the encrypted data to local storage
 
-    const response = await fetch(uploadLink, {
+    // Todo: dynamic filename
+    zip.file('encrypted_data.jwe', JSON.stringify(data));
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+
+    const response = await fetch(uploadUrl, {
       method: 'PUT',
-      body: blob,
+      body: zipBlob,
       headers: {
-        'Content-Type': 'application/octet-stream', // Adjust this as needed
+        'Content-Type': 'application/zip',
       },
     });
 
     if (!response.ok) {
       throw new Error(`Upload failed: ${response.statusText}`);
     }
+
+    return attachmentId;
   }
 
   async download(): Promise<EncryptedReconciliationDatasetInterface | null> {
     try {
       const { downloadUrl } = await this.requestBuilder.getDownloadInfo(this.partnerId, this.date);
 
-      // Todo: download data from downloadUrl
-      // return downloaded data (encrypted) and kid to decrypt
-      return {} as EncryptedReconciliationDatasetInterface;
+      const response = await fetch(downloadUrl);
+
+      const blob = await response.blob();
+      const textContent = await blob.text();
+      const encryptedData = JSON.parse(textContent);
+
+      return encryptedData as EncryptedReconciliationDatasetInterface;
     } catch (error) {
       return null;
     }
   }
 
   send(
-    event: DailyReconciliationRequestEvent | DailyReconciliationResponseEvent,
+    event: DailyReconciliationRequestPinetEvent | DailyReconciliationResponsePinetEvent,
   ): Promise<EventResponse> {
     return this.requestBuilder.sendEvent(event);
   }

@@ -13,6 +13,7 @@ export class Stats {
   @IsNumber()
   newDisputeCount!: number;
 }
+
 export class DailyReconciliationContractPayload extends BaseContractPayload {
   @IsString()
   @IsNotEmpty()
@@ -25,6 +26,9 @@ export class DailyReconciliationContractPayload extends BaseContractPayload {
   @ValidateNested()
   @Type(() => Stats)
   stats!: Stats;
+  //
+  // @IsUUID('4')
+  // fileId!: string;
 
   constructor(data?: Partial<DailyReconciliationContractPayload>) {
     super();
@@ -37,6 +41,7 @@ export enum DailyReconciliationResolveStatus {
   MISMATCHED = 'mismatched',
   FAILED = 'failed',
 }
+
 export interface DailyReconciliationResolveProtectedHeader extends JWSHeaderParameters {
   status: DailyReconciliationResolveStatus;
   message?: string;

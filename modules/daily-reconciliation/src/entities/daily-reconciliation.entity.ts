@@ -2,10 +2,7 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Nullable } from '@pressingly-modules/core/src/types/common.type';
 import BaseEntity from '@pressingly-modules/core/src/database/entities/base.entity';
 import { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
-import {
-  STRING_LENGTH,
-  STRING_LONG_LENGTH,
-} from '@pressingly-modules/core/src/database/schema/column';
+import { STRING_LENGTH } from '@pressingly-modules/core/src/database/schema/column';
 import { DailyReconciliationStatus } from '@pressingly-modules/daily-reconciliation/src/const/daily-reconciliation-status';
 import { DailyReconciliationMismatchEntity } from '@pressingly-modules/daily-reconciliation/src/entities/daily-reconciliation-mismatch.entity';
 
@@ -20,11 +17,11 @@ export class DailyReconciliationEntity extends BaseEntity {
   @Column({ type: 'timestamp' })
   date!: Date;
 
-  @Column({ type: 'varchar', length: STRING_LONG_LENGTH, nullable: true })
-  fileUrl!: string;
+  @Column({ type: 'uuid', nullable: true })
+  attachmentId!: string;
 
-  @Column({ type: 'varchar', length: STRING_LONG_LENGTH, nullable: true })
-  partnerFileUrl!: string;
+  @Column({ type: 'uuid', nullable: true })
+  partnerAttachmentId!: string;
 
   @Column({
     type: 'enum',

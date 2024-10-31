@@ -12,6 +12,7 @@ import type { KeyInterface } from '@pressingly-modules/event-contract/src/contra
 import { DailyReconciliationStatus } from '@pressingly-modules/daily-reconciliation/src/const/daily-reconciliation-status';
 import { RequestReconciliationService } from '@pressingly-modules/daily-reconciliation-builder/src/request-reconciliation.service';
 import type { ReconciliationBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-builder.interface';
+import type { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
 
 export interface FinalizeReconciliationServiceConfigs extends ResolveReconciliationServiceConfigs {
   key: Required<KeyInterface>;
@@ -31,11 +32,11 @@ export class FinalizeReconciliationService {
 
   private constructor(configs: FinalizeReconciliationServiceConfigs) {
     this.id = configs.id;
-    this.partnerId = configs.partnerId;
     this.key = configs.key;
     this.partnerKey = configs.partnerKey;
-    this.requestContract = new DailyReconciliationContract().fromJWS(configs.requestContract);
+    this.requestContract = configs.requestContract;
     this.requestContractPayload = this.requestContract.getPayload();
+    this.partnerId = this.requestContractPayload.iss;
     this.date = new Date(this.requestContractPayload.date);
     this.dataService = new DataService({
       dataBuilder: configs.dataBuilder,
@@ -54,11 +55,19 @@ export class FinalizeReconciliationService {
     this.reconciliationBuilder = configs.reconciliationBuilder;
   }
 
-  static async create(configs: Omit<FinalizeReconciliationServiceConfigs, 'partnerKey'>) {
-    const partnerKey = await configs.requestBuilder.getPartnerPublicKey(configs.partnerId);
+  static async create(
+    configs: Omit<FinalizeReconciliationServiceConfigs, 'partnerKey' | 'requestContract'> & {
+      requestContract: PinetContract;
+    },
+  ) {
+    const requestContract = new DailyReconciliationContract().fromJWS(configs.requestContract);
+    const partnerKey = await configs.requestBuilder.getPartnerPublicKey(
+      requestContract.getPayload().iss,
+    );
 
     return new FinalizeReconciliationService({
       ...configs,
+      requestContract,
       partnerKey,
     });
   }
