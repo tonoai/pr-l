@@ -107,7 +107,7 @@ export class FinalizeReconciliationService {
         id: this.requestContractPayload.contractId,
         status: DailyReconciliationStatus.RECONCILED,
         contract: this.requestContract.data,
-        reconciledAt: dayjs(protectedHeaderResult.reconciledAt).toDate(),
+        reconciledAt: dayjs.unix(protectedHeaderResult.reconciledAt!).toDate(),
       });
     }
     if (protectedHeaderResult.status === DailyReconciliationResolveStatus.MISMATCHED) {

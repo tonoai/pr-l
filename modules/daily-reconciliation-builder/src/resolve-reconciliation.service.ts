@@ -89,7 +89,7 @@ export class ResolveReconciliationService {
       partnerId: this.partnerId,
       status: 'processing',
       contract: this.requestContract.data,
-      issuedAt: dayjs(this.requestContractPayload.iat).toDate(),
+      issuedAt: dayjs.unix(this.requestContractPayload.iat).toDate(),
     });
     try {
       await this.requestContract.transformAndValidate(DailyReconciliationContractPayload);
