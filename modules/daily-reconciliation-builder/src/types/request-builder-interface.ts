@@ -15,7 +15,7 @@ export interface UploadInfoInterface {
 }
 
 export interface RequestBuilderInterface {
-  getUploadInfo(partnerId: string, partnerKid: string, date: Date): Promise<UploadInfoInterface>;
+  getUploadInfo(partnerId: string, date: Date): Promise<UploadInfoInterface>;
 
   getDownloadInfo(partnerId: string, date: Date): Promise<DownloadInfoInterface>;
 

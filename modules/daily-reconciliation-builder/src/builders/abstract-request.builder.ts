@@ -10,11 +10,7 @@ import type { EventResponse } from '@pressingly-modules/event-contract/src/event
 import type { PublicKeyInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/key.interface';
 
 export abstract class AbstractRequestBuilder implements RequestBuilderInterface {
-  abstract getUploadInfo(
-    partnerId: string,
-    partnerKid: string,
-    date: Date,
-  ): Promise<UploadInfoInterface>;
+  abstract getUploadInfo(partnerId: string, date: Date): Promise<UploadInfoInterface>;
 
   abstract getDownloadInfo(partnerId: string, date: Date): Promise<DownloadInfoInterface>;
 
