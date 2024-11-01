@@ -72,11 +72,12 @@ export class RequestReconciliationService {
 
   async execute() {
     const reconciliationId = uuidv4();
+
+    // build own data
+    await this.dataService.loadOwnData();
+    const encryptedOwnData = await this.dataService.encryptOwnData();
+
     const encryptedPartnerData = await this.requestService.download();
-    console.log(
-      'encryptedPartnerDataencryptedPartnerDataencryptedPartnerData',
-      encryptedPartnerData,
-    );
     if (encryptedPartnerData) {
       await this.dataService.loadPartnerData(encryptedPartnerData);
 
@@ -92,10 +93,6 @@ export class RequestReconciliationService {
         }
       }
     }
-
-    // build own data
-    await this.dataService.loadOwnData();
-    const encryptedOwnData = await this.dataService.encryptOwnData();
     // upload data to s3 via monetaService
     const attachmentId = await this.requestService.upload(encryptedOwnData);
 

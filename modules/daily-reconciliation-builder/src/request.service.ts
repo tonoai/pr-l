@@ -32,7 +32,6 @@ export class RequestService {
   async upload(data: EncryptedReconciliationDatasetInterface): Promise<string> {
     const { uploadUrl, attachmentId } = await this.requestBuilder.getUploadInfo(
       this.partnerId,
-      this.partnerKid,
       this.date.toDate(),
     );
 

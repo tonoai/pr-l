@@ -202,7 +202,7 @@ export class DataService {
           }
 
           if (mismatch.type === DailyReconciliationMismatchType.REDUNDANT) {
-            await this.dataBuilder.createSubscriptionCharge(this.partnerId, mismatch.data!);
+            await this.dataBuilder.createSubscriptionCharge(this.partnerId, mismatch.partnerData!);
             await this.reconciliationBuilder.upsertReconciliationResolution({
               reconciliationMismatchId: mismatch.id,
               modifiedData: mismatch.partnerData!,
