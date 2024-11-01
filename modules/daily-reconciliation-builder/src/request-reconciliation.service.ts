@@ -73,6 +73,10 @@ export class RequestReconciliationService {
   async execute() {
     const reconciliationId = uuidv4();
     const encryptedPartnerData = await this.requestService.download();
+    console.log(
+      'encryptedPartnerDataencryptedPartnerDataencryptedPartnerData',
+      encryptedPartnerData,
+    );
     if (encryptedPartnerData) {
       await this.dataService.loadPartnerData(encryptedPartnerData);
 

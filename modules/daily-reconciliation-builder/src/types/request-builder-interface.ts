@@ -6,6 +6,7 @@ import type { PublicKeyInterface } from '@pressingly-modules/daily-reconciliatio
 
 export interface DownloadInfoInterface {
   downloadUrl: string;
+  attachmentId: string;
 }
 
 export interface UploadInfoInterface {

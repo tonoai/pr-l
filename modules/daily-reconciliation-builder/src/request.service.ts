@@ -80,6 +80,8 @@ export class RequestService {
 
       return encryptedData as EncryptedReconciliationDatasetInterface;
     } catch (error) {
+      console.log(error);
+
       return null;
     }
   }
