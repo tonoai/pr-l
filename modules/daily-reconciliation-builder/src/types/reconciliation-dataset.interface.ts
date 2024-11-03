@@ -1,8 +1,4 @@
-import type {
-  DailyReconciliationMismatchRefType,
-  DailyReconciliationMismatchStatus,
-  DailyReconciliationMismatchType,
-} from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
+import type { DailyReconciliationMismatchInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
 import type { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
 
 export interface SubscriptionChargeDatasetInterface {
@@ -61,21 +57,14 @@ export type ReconciliationDataType =
   | FinalizedDisputeDatasetInterface
   | StatsDatasetInterface;
 
-export interface DailyReconciliationMismatch<T> {
-  id: string;
-  refId?: string;
-  refType: DailyReconciliationMismatchRefType;
-  data?: T;
-  partnerData?: T;
-  type: DailyReconciliationMismatchType;
-  status: DailyReconciliationMismatchStatus;
-  message: string;
-}
-
 export interface ReconciliationMismatchInterface {
-  subscriptionCharge: DailyReconciliationMismatch<SubscriptionChargeDatasetInterface>[];
-  newDispute: DailyReconciliationMismatch<NewDisputeDatasetInterface>[];
-  finalizedDispute: DailyReconciliationMismatch<FinalizedDisputeDatasetInterface>[];
-  stats: DailyReconciliationMismatch<StatsDatasetInterface>[];
+  subscriptionCharge: Partial<
+    DailyReconciliationMismatchInterface<SubscriptionChargeDatasetInterface>
+  >[];
+  newDispute: Partial<DailyReconciliationMismatchInterface<NewDisputeDatasetInterface>>[];
+  finalizedDispute: Partial<
+    DailyReconciliationMismatchInterface<FinalizedDisputeDatasetInterface>
+  >[];
+  stats: Partial<DailyReconciliationMismatchInterface<StatsDatasetInterface>>[];
   isMismatched: boolean;
 }

@@ -9,11 +9,11 @@ import {
 } from '@pressingly-modules/event-contract/src/contract/daily-reconciliation/daily-reconciliation.contract-payload';
 import type { ResolveReconciliationServiceConfigs } from '@pressingly-modules/daily-reconciliation-builder/src/resolve-reconciliation.service';
 import type { KeyInterface } from '@pressingly-modules/event-contract/src/contract/types/key.interface';
-import { DailyReconciliationStatus } from '@pressingly-modules/daily-reconciliation/src/const/daily-reconciliation-status';
 import { RequestReconciliationService } from '@pressingly-modules/daily-reconciliation-builder/src/request-reconciliation.service';
 import type { ReconciliationBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-builder.interface';
 import type { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
 import * as dayjs from 'dayjs';
+import { DailyReconciliationStatus } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation.interface';
 
 export interface FinalizeReconciliationServiceConfigs extends ResolveReconciliationServiceConfigs {
   key: Required<KeyInterface>;
@@ -76,13 +76,14 @@ export class FinalizeReconciliationService {
 
   async execute() {
     try {
-      const requestBuilder = this.requestService.requestBuilder;
       await this.requestContract.transformAndValidate(DailyReconciliationContractPayload);
       await this.requestContract.verifyAllSignatures([
         this.key.publicKey,
-        requestBuilder.getPublicKey.bind(requestBuilder),
-        requestBuilder.getPublicKey.bind(requestBuilder),
-        requestBuilder.getPinetCorePublicKey.bind(requestBuilder),
+        this.requestService.requestBuilder.getPublicKey.bind(this.requestService.requestBuilder),
+        this.requestService.requestBuilder.getPublicKey.bind(this.requestService.requestBuilder),
+        this.requestService.requestBuilder.getPinetCorePublicKey.bind(
+          this.requestService.requestBuilder,
+        ),
       ]);
     } catch (err) {
       return this.reconciliationBuilder.upsertReconciliation({
@@ -112,7 +113,7 @@ export class FinalizeReconciliationService {
         reconciledAt: dayjs.unix(protectedHeaderResult.reconciledAt!).toDate(),
       });
     }
-    if (protectedHeaderResult.status === DailyReconciliationResolveStatus.FAILED) {
+    if (protectedHeaderResult.status === DailyReconciliationResolveStatus.UNRECONCILED) {
       const requestReconciliationService = await RequestReconciliationService.create({
         dataBuilder: this.dataService.dataBuilder,
         requestBuilder: this.requestService.requestBuilder,
@@ -128,7 +129,7 @@ export class FinalizeReconciliationService {
 
       return this.reconciliationBuilder.upsertReconciliation({
         id: this.requestContractPayload.contractId,
-        status: DailyReconciliationStatus.FAILED,
+        status: DailyReconciliationStatus.UNRECONCILED,
         contract: this.requestContract.data,
         message: 'Data mismatched',
       });

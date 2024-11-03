@@ -13,6 +13,7 @@ import { DailyReconciliationResponsePinetEvent } from '@pressingly-modules/event
 import type { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
 import type { ReconciliationBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-builder.interface';
 import * as dayjs from 'dayjs';
+import { DailyReconciliationStatus } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation.interface';
 
 export interface ResolveReconciliationServiceConfigs {
   dataBuilder: DataBuilderInterface;
@@ -88,7 +89,7 @@ export class ResolveReconciliationService {
       id: this.requestContractPayload.contractId,
       date: this.date.toDate(),
       partnerId: this.partnerId,
-      status: 'processing',
+      status: DailyReconciliationStatus.PROCESSING,
       contract: this.requestContract.data,
       issuedAt: dayjs.unix(this.requestContractPayload.iat).toDate(),
     });
@@ -102,7 +103,7 @@ export class ResolveReconciliationService {
       ]);
     } catch (err) {
       return this.signContractAndSendEvent({
-        status: DailyReconciliationResolveStatus.FAILED,
+        status: DailyReconciliationResolveStatus.UNRECONCILED,
         // Todo: should be more specific error
         message: 'Verifying contract failed',
       });
@@ -111,7 +112,7 @@ export class ResolveReconciliationService {
     const encryptedPartnerData = await this.requestService.download();
     if (!encryptedPartnerData) {
       return this.signContractAndSendEvent({
-        status: DailyReconciliationResolveStatus.FAILED,
+        status: DailyReconciliationResolveStatus.UNRECONCILED,
         message: 'Failed to download partner data',
       });
     }
@@ -120,7 +121,7 @@ export class ResolveReconciliationService {
       await this.dataService.loadPartnerData(encryptedPartnerData);
     } catch (err) {
       return this.signContractAndSendEvent({
-        status: DailyReconciliationResolveStatus.FAILED,
+        status: DailyReconciliationResolveStatus.UNRECONCILED,
         message: 'Failed to decrypt partner data',
       });
     }
@@ -145,7 +146,7 @@ export class ResolveReconciliationService {
         return;
       } else {
         return this.signContractAndSendEvent({
-          status: DailyReconciliationResolveStatus.FAILED,
+          status: DailyReconciliationResolveStatus.UNRECONCILED,
           message: 'Data mismatch',
         });
       }
@@ -182,11 +183,19 @@ export class ResolveReconciliationService {
       },
     });
     // send daily-daily-reconciliation-builder request to monetaService
-    const sendEventRes = await this.requestService.send(event);
-    await this.reconciliationBuilder.upsertReconciliation({
-      id: this.requestContractPayload.contractId,
-      status: protectedHeader.status,
-      contract: sendEventRes.contract,
-    });
+    try {
+      const sendEventRes = await this.requestService.send(event);
+      await this.reconciliationBuilder.upsertReconciliation({
+        id: this.requestContractPayload.contractId,
+        status: protectedHeader.status as unknown as DailyReconciliationStatus,
+        contract: sendEventRes.contract,
+      });
+    } catch (err) {
+      return this.reconciliationBuilder.upsertReconciliation({
+        id: this.requestContractPayload.contractId,
+        status: DailyReconciliationStatus.FAILED,
+        message: 'Failed to send event',
+      });
+    }
   }
 }

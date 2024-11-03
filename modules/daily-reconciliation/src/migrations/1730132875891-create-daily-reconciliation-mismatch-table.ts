@@ -22,8 +22,6 @@ export class CreateDailyReconciliationMismatchTable1730132875891 implements Migr
         Column.enum('type', ['conflicted', 'missing', 'redundant']),
         Column.enum('status', ['pending', 'resolved']),
         Column.string('message', STRING_LENGTH).nullable(),
-        Column.string('note', STRING_LENGTH).nullable(),
-        Column.uuid('resolved_by_id').nullable(),
         Column.timestamp('created_at').setDefault('now()'),
         Column.timestamp('updated_at').setDefault('now()'),
       ]),

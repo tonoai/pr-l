@@ -13,7 +13,12 @@ export class CreateDailyReconciliationTable1730131783789 implements MigrationInt
         Column.timestamp('date').setDefault('now()'),
         Column.uuid('attachment_id').nullable(),
         Column.uuid('partner_attachment_id').nullable(),
-        Column.enum('status', ['processing', 'reconciled', 'failed']).setDefault('processing'),
+        Column.enum('status', ['processing', 'reconciled', 'unreconciled', 'failed']).setDefault(
+          'processing',
+        ),
+        Column.money('total_amount'),
+        Column.money('total_interchange_fee'),
+        Column.string('currency_code', 6),
         Column.string('message', STRING_LENGTH).nullable(),
         Column.jsonb('contract'),
         Column.timestamp('issued_at'),

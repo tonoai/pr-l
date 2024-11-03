@@ -38,7 +38,7 @@ export class DailyReconciliationContractPayload extends BaseContractPayload {
 
 export enum DailyReconciliationResolveStatus {
   RECONCILED = 'reconciled',
-  FAILED = 'failed',
+  UNRECONCILED = 'unreconciled',
 }
 
 export interface DailyReconciliationResolveProtectedHeader extends JWSHeaderParameters {
