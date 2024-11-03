@@ -21,6 +21,7 @@ export interface RequestReconciliationServiceConfigs {
   id: string;
   date?: Date;
   isPrimary?: boolean;
+  numberOfRetried?: number;
 }
 
 export class RequestReconciliationService {
@@ -34,9 +35,16 @@ export class RequestReconciliationService {
   private readonly date: dayjs.Dayjs;
   // Todo: restrict this isPrimary logic: 2 services should not be primary at the same time
   private readonly isPrimary: boolean;
+  private readonly numberOfRetried: number;
+  private readonly maxRetry: number = 2;
 
   // Not allow to new instance directly, should use static method create, for async constructor
   private constructor(configs: RequestReconciliationServiceConfigs) {
+    this.numberOfRetried = configs.numberOfRetried ?? 0;
+    if (this.numberOfRetried > this.maxRetry) {
+      throw new Error('Number of retried exceeded');
+    }
+
     this.id = configs.id;
     this.partnerId = configs.partnerId;
     this.date = configs.date ? dayjs(configs.date) : dayjs();
@@ -77,6 +85,9 @@ export class RequestReconciliationService {
     // build own data
     await this.dataService.loadOwnData();
 
+    // Todo: if publisher already uploaded data
+    // and membership not resolve conflict yet, it always stuck here
+    // no new request will be sent
     const encryptedPartnerData = await this.requestService.download();
     if (encryptedPartnerData) {
       await this.dataService.loadPartnerData(encryptedPartnerData);

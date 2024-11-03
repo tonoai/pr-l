@@ -43,7 +43,7 @@ export class CompareDatasetUtils {
     // Compare records in array2 against indices in indexMap
     array2.forEach(item2 => {
       const index1 = indexMap.get(item2[refIdKey]);
-      if (index1) {
+      if (index1 !== undefined) {
         const item1 = array1[index1];
         // Record exists in both arrays, check for field conflicts
         if (

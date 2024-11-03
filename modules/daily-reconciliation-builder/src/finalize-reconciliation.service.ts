@@ -114,6 +114,7 @@ export class FinalizeReconciliationService {
       });
     }
     if (protectedHeaderResult.status === DailyReconciliationResolveStatus.UNRECONCILED) {
+      // TOdo: need to count number of reconciliation request and pass it to requestReconciliationService
       const requestReconciliationService = await RequestReconciliationService.create({
         dataBuilder: this.dataService.dataBuilder,
         requestBuilder: this.requestService.requestBuilder,

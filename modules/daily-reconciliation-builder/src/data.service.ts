@@ -166,11 +166,13 @@ export class DataService {
           return;
         }
         mismatches.push(
-          ...value.map(mismatch => ({
-            ...mismatch,
-            id: uuidv4(),
-            reconciliationId,
-          })),
+          ...value.map(mismatch => {
+            // It will add more data to dataMismatch
+            mismatch.id = uuidv4();
+            mismatch.reconciliationId = reconciliationId;
+
+            return mismatch;
+          }),
         );
       });
       await this.reconciliationBuilder.upsertReconciliationMismatches(mismatches);
