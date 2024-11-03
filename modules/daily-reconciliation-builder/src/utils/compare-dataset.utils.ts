@@ -47,7 +47,7 @@ export class CompareDatasetUtils {
         const item1 = array1[index1];
         // Record exists in both arrays, check for field conflicts
         if (
-          CompareDatasetUtils.areObjectsEqual(
+          !CompareDatasetUtils.areObjectsEqual(
             item1 as Record<string, any>,
             item2 as Record<string, any>,
           )
