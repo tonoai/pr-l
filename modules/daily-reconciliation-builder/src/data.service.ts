@@ -252,7 +252,7 @@ export class DataService {
             action: DailyReconciliationResolutionsAction.MODIFY,
             // actionById: SYSTEM_DEFAULT_UUID,
           });
-          await this.dataBuilder.updateSubscriptionCharge(this.partnerId, mismatch.data!);
+          await this.dataBuilder.updateSubscriptionCharge(this.partnerId, mismatch.partnerData!);
         }
       }
     }

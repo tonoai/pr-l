@@ -122,6 +122,9 @@ export class CompareDatasetUtils {
     }
 
     for (const key of keys1) {
+      if (typeof obj1[key] === 'object' && typeof obj2[key] === 'object') {
+        return CompareDatasetUtils.areObjectsEqual(obj1[key], obj2[key]);
+      }
       if (obj1[key] !== obj2[key]) {
         return false;
       }
