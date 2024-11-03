@@ -37,7 +37,7 @@ export class FinalizeReconciliationService {
     this.partnerKey = configs.partnerKey;
     this.requestContract = configs.requestContract;
     this.requestContractPayload = this.requestContract.getPayload();
-    this.partnerId = this.requestContractPayload.iss;
+    this.partnerId = this.requestContractPayload.aud;
     this.date = dayjs(this.requestContractPayload.date);
     this.reconciliationBuilder = configs.reconciliationBuilder;
     this.dataService = new DataService({
@@ -64,7 +64,7 @@ export class FinalizeReconciliationService {
   ) {
     const requestContract = new DailyReconciliationContract().fromJWS(configs.requestContract);
     const partnerKey = await configs.requestBuilder.getPartnerPublicKey(
-      requestContract.getPayload().iss,
+      requestContract.getPayload().aud,
     );
 
     return new FinalizeReconciliationService({
