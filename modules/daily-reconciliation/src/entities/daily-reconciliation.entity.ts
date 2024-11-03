@@ -4,7 +4,7 @@ import BaseEntity from '@pressingly-modules/core/src/database/entities/base.enti
 import { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
 import { STRING_LENGTH } from '@pressingly-modules/core/src/database/schema/column';
 import { DailyReconciliationMismatchEntity } from '@pressingly-modules/daily-reconciliation/src/entities/daily-reconciliation-mismatch.entity';
-import { ColumnNumericTransformer } from '../../../../../src/core/database/column-numeric-transformer';
+import { ColumnNumericTransformer } from '@pressingly-modules/core/src/database/type/column-numeric-transformer';
 import { DailyReconciliationStatus } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation.interface';
 
 @Entity('daily_reconciliations')
