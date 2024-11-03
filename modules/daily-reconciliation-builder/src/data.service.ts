@@ -199,6 +199,8 @@ export class DataService {
               action: 'delete',
               // actionById: SYSTEM_DEFAULT_UUID,
             });
+
+            continue;
           }
 
           if (mismatch.type === DailyReconciliationMismatchType.REDUNDANT) {
@@ -209,6 +211,8 @@ export class DataService {
               action: 'create',
               // actionById: SYSTEM_DEFAULT_UUID,
             });
+
+            continue;
           }
 
           if (mismatch.type === DailyReconciliationMismatchType.CONFLICTED) {

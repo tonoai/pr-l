@@ -75,7 +75,7 @@ export class RequestReconciliationService {
 
     // build own data
     await this.dataService.loadOwnData();
-    const encryptedOwnData = await this.dataService.encryptOwnData();
+    let encryptedOwnData = await this.dataService.encryptOwnData();
 
     const encryptedPartnerData = await this.requestService.download();
     if (encryptedPartnerData) {
@@ -88,9 +88,11 @@ export class RequestReconciliationService {
         // reinit RequestReconciliationService, then call execute => compareData should be true
         // if compareData not true, should resolve conflict manually again
         const isResolvedConflict = await this.dataService.resolveConflict();
-        if (!isResolvedConflict) {
-          return;
-        }
+        if (!isResolvedConflict) return;
+
+        // rebuild own data
+        await this.dataService.loadOwnData();
+        encryptedOwnData = await this.dataService.encryptOwnData();
       }
     }
     // upload data to s3 via monetaService
