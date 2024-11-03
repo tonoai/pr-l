@@ -76,12 +76,13 @@ export class FinalizeReconciliationService {
 
   async execute() {
     try {
+      const requestBuilder = this.requestService.requestBuilder;
       await this.requestContract.transformAndValidate(DailyReconciliationContractPayload);
       await this.requestContract.verifyAllSignatures([
         this.key.publicKey,
-        this.requestService.requestBuilder.getPublicKey,
-        this.requestService.requestBuilder.getPublicKey,
-        this.requestService.requestBuilder.getPinetCorePublicKey,
+        requestBuilder.getPublicKey.bind(requestBuilder),
+        requestBuilder.getPublicKey.bind(requestBuilder),
+        requestBuilder.getPinetCorePublicKey.bind(requestBuilder),
       ]);
     } catch (err) {
       return this.reconciliationBuilder.upsertReconciliation({

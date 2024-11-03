@@ -199,16 +199,20 @@ export class DataService {
               action: 'delete',
               // actionById: SYSTEM_DEFAULT_UUID,
             });
+
+            continue;
           }
 
           if (mismatch.type === DailyReconciliationMismatchType.REDUNDANT) {
-            await this.dataBuilder.createSubscriptionCharge(this.partnerId, mismatch.data!);
+            await this.dataBuilder.createSubscriptionCharge(this.partnerId, mismatch.partnerData!);
             await this.reconciliationBuilder.upsertReconciliationResolution({
               reconciliationMismatchId: mismatch.id,
               modifiedData: mismatch.partnerData!,
               action: 'create',
               // actionById: SYSTEM_DEFAULT_UUID,
             });
+
+            continue;
           }
 
           if (mismatch.type === DailyReconciliationMismatchType.CONFLICTED) {
