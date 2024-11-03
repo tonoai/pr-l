@@ -19,19 +19,21 @@ export class ReconciliationBuilder extends AbstractReconciliationBuilder {
     super();
   }
 
-  upsertReconciliation<T = DailyReconciliationEntity>(input: Partial<T>): Promise<T> {
-    return this.reconciliationRepository.save(input) as Promise<T>;
+  upsertReconciliation(
+    input: Partial<DailyReconciliationEntity>,
+  ): Promise<DailyReconciliationEntity> {
+    return this.reconciliationRepository.save(input) as Promise<DailyReconciliationEntity>;
   }
 
-  upsertReconciliationMismatches<T = DailyReconciliationMismatchEntity>(
-    input: Partial<T>[],
-  ): Promise<T[]> {
-    return this.mismatchRepository.save(input) as Promise<T[]>;
+  upsertReconciliationMismatches(
+    input: Partial<DailyReconciliationMismatchEntity>[],
+  ): Promise<DailyReconciliationMismatchEntity[]> {
+    return this.mismatchRepository.save(input);
   }
 
-  upsertReconciliationResolution<T = DailyReconciliationResolutionEntity>(
-    input: Partial<T>,
-  ): Promise<T> {
-    return this.resolutionRepository.save(input) as Promise<T>;
+  upsertReconciliationResolution(
+    input: Partial<DailyReconciliationResolutionEntity>,
+  ): Promise<DailyReconciliationResolutionEntity> {
+    return this.resolutionRepository.save(input) as Promise<DailyReconciliationResolutionEntity>;
   }
 }

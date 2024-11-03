@@ -9,6 +9,7 @@ import { DailyReconciliationRequestPinetEvent } from '@pressingly-modules/event-
 import type { PrivateKeyInterface, PublicKeyInterface } from './types/key.interface';
 import type { ReconciliationBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-builder.interface';
 import * as dayjs from 'dayjs';
+import { DailyReconciliationStatus } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation.interface';
 
 export interface RequestReconciliationServiceConfigs {
   dataBuilder: DataBuilderInterface;
@@ -75,7 +76,6 @@ export class RequestReconciliationService {
 
     // build own data
     await this.dataService.loadOwnData();
-    let encryptedOwnData = await this.dataService.encryptOwnData();
 
     const encryptedPartnerData = await this.requestService.download();
     if (encryptedPartnerData) {
@@ -88,14 +88,16 @@ export class RequestReconciliationService {
         // reinit RequestReconciliationService, then call execute => compareData should be true
         // if compareData not true, should resolve conflict manually again
         const isResolvedConflict = await this.dataService.resolveConflict();
-        if (!isResolvedConflict) return;
+        if (!isResolvedConflict) {
+          return;
+        }
 
         // rebuild own data
         await this.dataService.loadOwnData();
-        encryptedOwnData = await this.dataService.encryptOwnData();
       }
     }
-    // upload data to s3 via monetaService
+    // encrypt and upload data to s3 via monetaService
+    const encryptedOwnData = await this.dataService.encryptOwnData();
     const attachmentId = await this.requestService.upload(encryptedOwnData);
 
     // init daily-daily-reconciliation-builder contracts
@@ -122,8 +124,12 @@ export class RequestReconciliationService {
       contract: contract.data,
       partnerId: this.partnerId,
       attachmentId,
-      date: this.date,
-      status: 'processing',
+      date: this.date.toDate(),
+      status: DailyReconciliationStatus.PROCESSING,
+      totalAmount: this.dataService.data.statsDataset.totalSubscriptionChargeAmount,
+      totalInterchangeFee: this.dataService.data.statsDataset.totalInterchangeFee,
+      // TODO: define currency code later
+      currencyCode: this.dataService.data.subscriptionChargeDataset[0]?.currency ?? 'USD',
       issuedAt: iat.toDate(),
     });
 
@@ -132,10 +138,18 @@ export class RequestReconciliationService {
         contract: contract.data,
       },
     });
-    const sendEventRes = await this.requestService.send(event);
-    await this.reconciliationBuilder.upsertReconciliation({
-      id: reconciliationId,
-      contract: sendEventRes.contract,
-    });
+    try {
+      const sendEventRes = await this.requestService.send(event);
+      await this.reconciliationBuilder.upsertReconciliation({
+        id: reconciliationId,
+        contract: sendEventRes.contract,
+      });
+    } catch (error) {
+      await this.reconciliationBuilder.upsertReconciliation({
+        id: reconciliationId,
+        status: DailyReconciliationStatus.FAILED,
+        message: 'Failed to send event',
+      });
+    }
   }
 }

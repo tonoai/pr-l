@@ -1,15 +1,20 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Nullable } from '@pressingly-modules/core/src/types/common.type';
 import {
+  type DailyReconciliationMismatchInterface,
   DailyReconciliationMismatchRefType,
   DailyReconciliationMismatchStatus,
   DailyReconciliationMismatchType,
 } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
 import { DailyReconciliationEntity } from '@pressingly-modules/daily-reconciliation/src/entities/daily-reconciliation.entity';
 import BaseEntity from '@pressingly-modules/core/src/database/entities/base.entity';
+import { ReconciliationDataType } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-dataset.interface';
 
 @Entity('daily_reconciliation_mismatches')
-export class DailyReconciliationMismatchEntity extends BaseEntity {
+export class DailyReconciliationMismatchEntity
+  extends BaseEntity
+  implements DailyReconciliationMismatchInterface<ReconciliationDataType>
+{
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
@@ -26,10 +31,10 @@ export class DailyReconciliationMismatchEntity extends BaseEntity {
   refType!: DailyReconciliationMismatchRefType;
 
   @Column({ type: 'jsonb', nullable: true })
-  data!: Record<string, any>;
+  data!: ReconciliationDataType;
 
   @Column({ type: 'jsonb', nullable: true })
-  partnerData!: Record<string, any>;
+  partnerData!: ReconciliationDataType;
 
   @Column({
     type: 'enum',
@@ -45,12 +50,6 @@ export class DailyReconciliationMismatchEntity extends BaseEntity {
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   message!: Nullable<string>;
-
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  note!: Nullable<string>;
-
-  @Column({ type: 'uuid', nullable: true })
-  resolvedById!: string;
 
   @ManyToOne(() => DailyReconciliationEntity, dispute => dispute.mismatches)
   reconciliation!: DailyReconciliationEntity;
