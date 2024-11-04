@@ -13,6 +13,7 @@ export class CreateDailyReconciliationSubscriptionChargeTable1730690355234
         Column.uuid('subscription_charge_id').setPrimaryOnly(),
         Column.enum('mismatch_status', ['matched', 'mismatched']),
         Column.enum('clearance_status', ['reconciled', 'unreconciled']),
+        Column.timestamp('reconcile_date'),
         Column.timestamp('created_at').setDefault('now()'),
         Column.timestamp('updated_at').setDefault('now()'),
       ]),

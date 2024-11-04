@@ -43,7 +43,7 @@ export class ReconciliationBuilder extends AbstractReconciliationBuilder {
   upsertReconciliationSubscriptionCharges(
     input: Partial<DailyReconciliationSubscriptionChargesEntity>[],
   ): Promise<DailyReconciliationSubscriptionChargesEntity[]> {
-    return Promise.resolve([]);
+    // return Promise.resolve([]);
 
     return this.subscriptionChargeRepository.save(input) as Promise<
       DailyReconciliationSubscriptionChargesEntity[]

@@ -202,6 +202,7 @@ export class ResolveReconciliationService {
           : DailyReconciliationSubscriptionChargeMismatchStatus.MATCHED,
         clearanceStatus:
           protectedHeader.status as unknown as DailyReconciliationSubscriptionChargeClearanceStatus,
+        reconcileDate: this.date.toDate(),
       });
     });
     await this.reconciliationBuilder.upsertReconciliationSubscriptionCharges(

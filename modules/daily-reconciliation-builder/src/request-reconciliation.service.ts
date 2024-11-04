@@ -161,6 +161,7 @@ export class RequestReconciliationService {
           ? DailyReconciliationSubscriptionChargeMismatchStatus.MISMATCHED
           : DailyReconciliationSubscriptionChargeMismatchStatus.MATCHED,
         clearanceStatus: DailyReconciliationSubscriptionChargeClearanceStatus.UNRECONCILED,
+        reconcileDate: this.date.toDate(),
       });
     });
     await this.reconciliationBuilder.upsertReconciliationSubscriptionCharges(

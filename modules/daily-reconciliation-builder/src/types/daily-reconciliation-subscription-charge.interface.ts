@@ -12,4 +12,5 @@ export interface DailyReconciliationSubscriptionChargeInterface {
   subscriptionChargeId: string;
   mismatchStatus: DailyReconciliationSubscriptionChargeMismatchStatus;
   clearanceStatus: DailyReconciliationSubscriptionChargeClearanceStatus;
+  reconcileDate: Date;
 }

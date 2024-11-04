@@ -118,6 +118,7 @@ export class FinalizeReconciliationService {
           this.dataService.partnerData.subscriptionChargeDataset.map(data => ({
             subscriptionChargeId: data.subscriptionChargeId,
             clearanceStatus: DailyReconciliationSubscriptionChargeClearanceStatus.RECONCILED,
+            reconcileDate: this.date.toDate(),
           })),
         );
       }

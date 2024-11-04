@@ -21,4 +21,7 @@ export class DailyReconciliationSubscriptionChargesEntity extends BaseEntity {
     enum: DailyReconciliationSubscriptionChargeClearanceStatus,
   })
   clearanceStatus!: DailyReconciliationSubscriptionChargeClearanceStatus;
+
+  @Column({ type: 'timestamp' })
+  reconcileDate!: Date;
 }
