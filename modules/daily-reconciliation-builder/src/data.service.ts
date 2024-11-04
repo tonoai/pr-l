@@ -263,26 +263,26 @@ export class DataService {
             // What happen if 2 contracts are correct?
             // if 2 contracts are the same
             // compare contract data with extracted data of both mismatch and partner mismatch
-          }
 
-          // Todo: the big question is how to update own data?
-          // if resolve conflict automatically, how to update partner data?
-          await this.reconciliationBuilder.upsertReconciliationResolution({
-            reconciliationMismatchId: mismatch.id,
-            originalData: mismatch.data!,
-            modifiedData: mismatch.partnerData!,
-            action: DailyReconciliationResolutionsAction.MODIFY,
-            actionType: DailyReconciliationResolutionsActionType.AUTOMATIC,
-            // actionById: SYSTEM_DEFAULT_UUID,
-          });
-          await this.dataBuilder.updateSubscriptionCharge(this.partnerId, mismatch.partnerData!);
-          await this.reconciliationBuilder.upsertReconciliationMismatches([
-            {
-              id: mismatch.id,
-              status: DailyReconciliationMismatchStatus.RESOLVED,
-            },
-          ]);
-          mismatch.status = DailyReconciliationMismatchStatus.RESOLVED;
+            // Todo: the big question is how to update own data?
+            // if resolve conflict automatically, how to update partner data?
+            await this.reconciliationBuilder.upsertReconciliationResolution({
+              reconciliationMismatchId: mismatch.id,
+              originalData: mismatch.data!,
+              modifiedData: mismatch.partnerData!,
+              action: DailyReconciliationResolutionsAction.MODIFY,
+              actionType: DailyReconciliationResolutionsActionType.AUTOMATIC,
+              // actionById: SYSTEM_DEFAULT_UUID,
+            });
+            await this.dataBuilder.createSubscriptionCharge(this.partnerId, mismatch.partnerData!);
+            await this.reconciliationBuilder.upsertReconciliationMismatches([
+              {
+                id: mismatch.id,
+                status: DailyReconciliationMismatchStatus.RESOLVED,
+              },
+            ]);
+            mismatch.status = DailyReconciliationMismatchStatus.RESOLVED;
+          }
         }
       }
     }
