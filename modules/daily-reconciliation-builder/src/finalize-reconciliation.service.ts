@@ -116,7 +116,7 @@ export class FinalizeReconciliationService {
 
         await this.reconciliationBuilder.upsertReconciliationSubscriptionCharges(
           this.dataService.partnerData.subscriptionChargeDataset.map(data => ({
-            subscriptionChargesId: data.subscriptionChargeId,
+            subscriptionChargeId: data.subscriptionChargeId,
             clearanceStatus: DailyReconciliationSubscriptionChargeClearanceStatus.RECONCILED,
           })),
         );

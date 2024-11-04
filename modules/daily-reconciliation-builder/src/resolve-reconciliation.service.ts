@@ -196,7 +196,7 @@ export class ResolveReconciliationService {
     });
     this.dataService.data.subscriptionChargeDataset.forEach(subscriptionCharge => {
       updateSubscriptionChargesStatus.push({
-        subscriptionChargesId: subscriptionCharge.subscriptionChargeId,
+        subscriptionChargeId: subscriptionCharge.subscriptionChargeId,
         mismatchStatus: mismatchStatusMap.get(subscriptionCharge.subscriptionChargeId)
           ? DailyReconciliationSubscriptionChargeMismatchStatus.MISMATCHED
           : DailyReconciliationSubscriptionChargeMismatchStatus.MATCHED,

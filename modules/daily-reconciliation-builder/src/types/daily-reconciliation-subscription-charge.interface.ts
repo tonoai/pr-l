@@ -9,7 +9,7 @@ export enum DailyReconciliationSubscriptionChargeClearanceStatus {
 }
 
 export interface DailyReconciliationSubscriptionChargeInterface {
-  subscriptionChargesId: string;
+  subscriptionChargeId: string;
   mismatchStatus: DailyReconciliationSubscriptionChargeMismatchStatus;
   clearanceStatus: DailyReconciliationSubscriptionChargeClearanceStatus;
 }

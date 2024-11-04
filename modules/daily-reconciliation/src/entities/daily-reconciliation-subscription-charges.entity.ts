@@ -8,7 +8,7 @@ import {
 @Entity('daily_reconciliation_subscription_charges')
 export class DailyReconciliationSubscriptionChargesEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
-  subscriptionChargesId!: string;
+  subscriptionChargeId!: string;
 
   @Column({
     type: 'enum',
