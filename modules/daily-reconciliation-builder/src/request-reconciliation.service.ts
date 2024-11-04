@@ -152,7 +152,12 @@ export class RequestReconciliationService {
     const updateSubscriptionChargesStatus: DailyReconciliationSubscriptionChargeInterface[] = [];
     const mismatchStatusMap = new Map<string, DailyReconciliationMismatchStatus>();
     this.dataService.dataMismatch.subscriptionCharge.forEach(subscriptionCharge => {
-      mismatchStatusMap.set(subscriptionCharge.id!, subscriptionCharge.status!);
+      const subscriptionChargeId =
+        subscriptionCharge.data?.subscriptionChargeId ??
+        subscriptionCharge.partnerData?.subscriptionChargeId;
+      if (subscriptionChargeId) {
+        mismatchStatusMap.set(subscriptionChargeId, subscriptionCharge.status!);
+      }
     });
     this.dataService.data.subscriptionChargeDataset.forEach(subscriptionCharge => {
       updateSubscriptionChargesStatus.push({
