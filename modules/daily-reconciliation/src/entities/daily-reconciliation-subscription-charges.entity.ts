@@ -20,5 +20,5 @@ export class DailyReconciliationSubscriptionChargesEntity extends BaseEntity {
     type: 'enum',
     enum: DailyReconciliationSubscriptionChargeClearanceStatus,
   })
-  actionType!: DailyReconciliationSubscriptionChargeClearanceStatus;
+  clearanceStatus!: DailyReconciliationSubscriptionChargeClearanceStatus;
 }
