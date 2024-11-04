@@ -3,7 +3,7 @@ import {
   BaseEntity as TypeOrmBaseEntity,
   BeforeInsert,
   BeforeUpdate,
-  Column,
+  // Column,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -11,7 +11,8 @@ import { Exclude, instanceToPlain } from 'class-transformer';
 
 export default class BaseEntity extends TypeOrmBaseEntity {
   @Exclude({ toPlainOnly: true })
-  @Column({ select: false, update: false, insert: false, nullable: true, type: 'json' })
+  // TODO: this column is not in use
+  // @Column({ select: false, update: false, insert: false, nullable: true, type: 'json' })
   private origin!: Record<string, any>;
 
   @CreateDateColumn({ select: false })

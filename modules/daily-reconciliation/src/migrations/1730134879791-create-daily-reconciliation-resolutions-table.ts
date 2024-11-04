@@ -23,6 +23,18 @@ export class CreateDailyReconciliationResolutionTable1730134879791 implements Mi
     await queryRunner.query(
       `CREATE INDEX idx_${this.tableName}_reconciliation_mismatch_id ON ${this.tableName} (reconciliation_mismatch_id)`,
     );
+
+    // unique since one-to-one relationship
+    await queryRunner.query(
+      `ALTER TABLE ${this.tableName} ADD CONSTRAINT "unique_reconciliation_mismatch_id" UNIQUE ("reconciliation_mismatch_id")`,
+    );
+
+    // add missing foreign key constraint
+    await queryRunner.query(
+      `ALTER TABLE ${this.tableName} ADD CONSTRAINT "fk_${this.tableName}_reconciliation_mismatch_id" ` +
+        `FOREIGN KEY ("reconciliation_mismatch_id") REFERENCES "daily_reconciliation_mismatches"("id") ` +
+        `ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<any> {

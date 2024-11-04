@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Nullable } from '@pressingly-modules/core/src/types/common.type';
 import {
   type DailyReconciliationMismatchInterface,
@@ -52,5 +52,10 @@ export class DailyReconciliationMismatchEntity
   message!: Nullable<string>;
 
   @ManyToOne(() => DailyReconciliationEntity, dispute => dispute.mismatches)
+  @JoinColumn({
+    name: 'reconciliation_id',
+    foreignKeyConstraintName: 'fk_daily_reconciliation_mismatches_reconciliation_id',
+  })
+  @Index('idx_daily_reconciliation_mismatches_reconciliation_id')
   reconciliation!: DailyReconciliationEntity;
 }

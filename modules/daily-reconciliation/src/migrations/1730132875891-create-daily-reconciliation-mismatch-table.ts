@@ -30,6 +30,13 @@ export class CreateDailyReconciliationMismatchTable1730132875891 implements Migr
     await queryRunner.query(
       `CREATE INDEX idx_${this.tableName}_reconciliation_id ON ${this.tableName} (reconciliation_id)`,
     );
+
+    // add missing foreign key constraint
+    await queryRunner.query(
+      `ALTER TABLE ${this.tableName} ADD CONSTRAINT "fk_${this.tableName}_reconciliation_id" ` +
+        `FOREIGN KEY ("reconciliation_id") REFERENCES "daily_reconciliations"("id") ` +
+        `ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<any> {

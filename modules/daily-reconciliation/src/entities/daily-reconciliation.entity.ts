@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Nullable } from '@pressingly-modules/core/src/types/common.type';
 import BaseEntity from '@pressingly-modules/core/src/database/entities/base.entity';
 import { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
@@ -9,13 +9,14 @@ import { DailyReconciliationStatus } from '@pressingly-modules/daily-reconciliat
 
 @Entity('daily_reconciliations')
 export class DailyReconciliationEntity extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn('uuid', { primaryKeyConstraintName: 'daily_reconciliations__id' })
   id!: string;
 
   @Column({ type: 'uuid' })
+  @Index('idx_daily_reconciliations_partner_id')
   partnerId!: string;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', default: () => 'now()' })
   date!: Date;
 
   @Column({ type: 'uuid', nullable: true })
@@ -49,7 +50,7 @@ export class DailyReconciliationEntity extends BaseEntity {
   @Column({ type: 'timestamp' })
   issuedAt!: Date;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', nullable: true })
   reconciledAt!: Nullable<Date>;
 
   @OneToMany(() => DailyReconciliationMismatchEntity, entity => entity.reconciliation)

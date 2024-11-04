@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import BaseEntity from '@pressingly-modules/core/src/database/entities/base.entity';
 import { DailyReconciliationMismatchEntity } from '@pressingly-modules/daily-reconciliation/src/entities/daily-reconciliation-mismatch.entity';
 import {
@@ -12,7 +12,8 @@ export class DailyReconciliationResolutionEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ type: 'uuid' })
+  @Column({ type: 'uuid', unique: true })
+  @Index('idx_daily_reconciliation_resolutions_reconciliation_mismatch_id')
   reconciliationMismatchId!: string;
 
   @Column({ type: 'jsonb', nullable: true })
@@ -38,6 +39,9 @@ export class DailyReconciliationResolutionEntity extends BaseEntity {
   actionById!: Nullable<string>;
 
   @OneToOne(() => DailyReconciliationMismatchEntity)
-  @JoinColumn({ name: 'reconciliation_mismatch_id' })
+  @JoinColumn({
+    name: 'reconciliation_mismatch_id',
+    foreignKeyConstraintName: 'fk_daily_reconciliation_resolutions_reconciliation_mismatch_id',
+  })
   mismatch!: DailyReconciliationMismatchEntity;
 }

@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 import BaseEntity from '@pressingly-modules/core/src/database/entities/base.entity';
 import {
   DailyReconciliationSubscriptionChargeClearanceStatus,
@@ -7,7 +7,7 @@ import {
 
 @Entity('daily_reconciliation_subscription_charges')
 export class DailyReconciliationSubscriptionChargesEntity extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn('uuid')
   subscriptionChargeId!: string;
 
   @Column({

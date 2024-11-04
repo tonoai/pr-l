@@ -8,9 +8,13 @@ export class CreateDailyReconciliationSubscriptionChargeTable1730690355234
   private tableName = 'daily_reconciliation_subscription_charges';
 
   public async up(queryRunner: QueryRunner): Promise<any> {
+    // not auto generated
+    const subcriptionChargeIdColumn = Column.uuid('subscription_charge_id').setPrimary();
+    subcriptionChargeIdColumn.isGenerated = false;
+
     await queryRunner.createTable(
       Schema.define(this.tableName, [
-        Column.uuid('subscription_charge_id').setPrimary(),
+        subcriptionChargeIdColumn,
         Column.enum('mismatch_status', ['matched', 'mismatched']),
         Column.enum('clearance_status', ['reconciled', 'unreconciled']),
         Column.timestamp('created_at').setDefault('now()'),
