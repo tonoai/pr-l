@@ -14,10 +14,16 @@ import { compactDecrypt, CompactEncrypt } from 'jose';
 import type { DataBuilderInterface } from './types/data-builder.interface';
 import { CompareDatasetUtils } from '@pressingly-modules/daily-reconciliation-builder/src/utils/compare-dataset.utils';
 import type { DailyReconciliationMismatchInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
-import { DailyReconciliationMismatchType } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
+import {
+  DailyReconciliationMismatchStatus,
+  DailyReconciliationMismatchType,
+} from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
 import type * as dayjs from 'dayjs';
 import type { ReconciliationBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-builder.interface';
-import { DailyReconciliationResolutionsAction } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-resolution.interface';
+import {
+  DailyReconciliationResolutionsAction,
+  DailyReconciliationResolutionsActionType,
+} from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-resolution.interface';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface DataServiceConfigs {
@@ -206,9 +212,17 @@ export class DataService {
               reconciliationMismatchId: mismatch.id,
               originalData: mismatch.data!,
               action: DailyReconciliationResolutionsAction.DELETE,
+              actionType: DailyReconciliationResolutionsActionType.AUTOMATIC,
               // actionById: SYSTEM_DEFAULT_UUID,
             });
             await this.dataBuilder.deleteSubscriptionCharge(this.partnerId, mismatch.data!);
+            await this.reconciliationBuilder.upsertReconciliationMismatches([
+              {
+                id: mismatch.id,
+                status: DailyReconciliationMismatchStatus.RESOLVED,
+              },
+            ]);
+            mismatch.status = DailyReconciliationMismatchStatus.RESOLVED;
 
             continue;
           }
@@ -218,9 +232,17 @@ export class DataService {
               reconciliationMismatchId: mismatch.id,
               modifiedData: mismatch.partnerData!,
               action: DailyReconciliationResolutionsAction.CREATE,
+              actionType: DailyReconciliationResolutionsActionType.AUTOMATIC,
               // actionById: SYSTEM_DEFAULT_UUID,
             });
             await this.dataBuilder.createSubscriptionCharge(this.partnerId, mismatch.partnerData!);
+            await this.reconciliationBuilder.upsertReconciliationMismatches([
+              {
+                id: mismatch.id,
+                status: DailyReconciliationMismatchStatus.RESOLVED,
+              },
+            ]);
+            mismatch.status = DailyReconciliationMismatchStatus.RESOLVED;
 
             continue;
           }
@@ -250,9 +272,17 @@ export class DataService {
             originalData: mismatch.data!,
             modifiedData: mismatch.partnerData!,
             action: DailyReconciliationResolutionsAction.MODIFY,
+            actionType: DailyReconciliationResolutionsActionType.AUTOMATIC,
             // actionById: SYSTEM_DEFAULT_UUID,
           });
           await this.dataBuilder.updateSubscriptionCharge(this.partnerId, mismatch.partnerData!);
+          await this.reconciliationBuilder.upsertReconciliationMismatches([
+            {
+              id: mismatch.id,
+              status: DailyReconciliationMismatchStatus.RESOLVED,
+            },
+          ]);
+          mismatch.status = DailyReconciliationMismatchStatus.RESOLVED;
         }
       }
     }

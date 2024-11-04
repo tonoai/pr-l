@@ -5,6 +5,7 @@ import { DailyReconciliationEntity } from '@pressingly-modules/daily-reconciliat
 import { DailyReconciliationMismatchEntity } from '@pressingly-modules/daily-reconciliation/src/entities/daily-reconciliation-mismatch.entity';
 import { DailyReconciliationResolutionEntity } from '@pressingly-modules/daily-reconciliation/src/entities/daily-reconciliation-resolution.entity';
 import { Repository } from 'typeorm';
+import { DailyReconciliationSubscriptionChargesEntity } from '@pressingly-modules/daily-reconciliation/src/entities/daily-reconciliation-subscription-charges.entity';
 
 @Injectable()
 export class ReconciliationBuilder extends AbstractReconciliationBuilder {
@@ -15,6 +16,8 @@ export class ReconciliationBuilder extends AbstractReconciliationBuilder {
     private readonly mismatchRepository: Repository<DailyReconciliationMismatchEntity>,
     @InjectRepository(DailyReconciliationResolutionEntity)
     private readonly resolutionRepository: Repository<DailyReconciliationResolutionEntity>,
+    @InjectRepository(DailyReconciliationSubscriptionChargesEntity)
+    private readonly subscriptionChargeRepository: Repository<DailyReconciliationSubscriptionChargesEntity>,
   ) {
     super();
   }
@@ -35,5 +38,13 @@ export class ReconciliationBuilder extends AbstractReconciliationBuilder {
     input: Partial<DailyReconciliationResolutionEntity>,
   ): Promise<DailyReconciliationResolutionEntity> {
     return this.resolutionRepository.save(input) as Promise<DailyReconciliationResolutionEntity>;
+  }
+
+  upsertReconciliationSubscriptionCharges(
+    input: Partial<DailyReconciliationSubscriptionChargesEntity>[],
+  ): Promise<DailyReconciliationSubscriptionChargesEntity[]> {
+    return this.subscriptionChargeRepository.save(input) as Promise<
+      DailyReconciliationSubscriptionChargesEntity[]
+    >;
   }
 }

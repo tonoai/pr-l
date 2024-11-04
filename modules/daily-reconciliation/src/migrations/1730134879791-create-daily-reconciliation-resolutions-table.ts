@@ -13,6 +13,7 @@ export class CreateDailyReconciliationResolutionTable1730134879791 implements Mi
         Column.jsonb('original_data').nullable(),
         Column.jsonb('modified_data').nullable(),
         Column.enum('action', ['modify', 'create', 'delete']),
+        Column.enum('action_type', ['automatic', 'manual']).setDefault('automatic'),
         Column.uuid('action_by_id').nullable(),
         Column.timestamp('created_at').setDefault('now()'),
         Column.timestamp('updated_at').setDefault('now()'),

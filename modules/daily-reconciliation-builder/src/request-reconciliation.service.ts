@@ -10,6 +10,12 @@ import type { PrivateKeyInterface, PublicKeyInterface } from './types/key.interf
 import type { ReconciliationBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-builder.interface';
 import * as dayjs from 'dayjs';
 import { DailyReconciliationStatus } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation.interface';
+import type { DailyReconciliationSubscriptionChargeInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-subscription-charge.interface';
+import {
+  DailyReconciliationSubscriptionChargeClearanceStatus,
+  DailyReconciliationSubscriptionChargeMismatchStatus,
+} from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-subscription-charge.interface';
+import type { DailyReconciliationMismatchStatus } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
 
 export interface RequestReconciliationServiceConfigs {
   dataBuilder: DataBuilderInterface;
@@ -143,6 +149,23 @@ export class RequestReconciliationService {
       currencyCode: this.dataService.data.subscriptionChargeDataset[0]?.currency ?? 'USD',
       issuedAt: iat.toDate(),
     });
+    const updateSubscriptionChargesStatus: DailyReconciliationSubscriptionChargeInterface[] = [];
+    const mismatchStatusMap = new Map<string, DailyReconciliationMismatchStatus>();
+    this.dataService.dataMismatch.subscriptionCharge.forEach(subscriptionCharge => {
+      mismatchStatusMap.set(subscriptionCharge.id!, subscriptionCharge.status!);
+    });
+    this.dataService.data.subscriptionChargeDataset.forEach(subscriptionCharge => {
+      updateSubscriptionChargesStatus.push({
+        subscriptionChargesId: subscriptionCharge.subscriptionChargeId,
+        mismatchStatus: mismatchStatusMap.get(subscriptionCharge.subscriptionChargeId)
+          ? DailyReconciliationSubscriptionChargeMismatchStatus.MISMATCHED
+          : DailyReconciliationSubscriptionChargeMismatchStatus.MATCHED,
+        clearanceStatus: DailyReconciliationSubscriptionChargeClearanceStatus.UNRECONCILED,
+      });
+    });
+    await this.reconciliationBuilder.upsertReconciliationSubscriptionCharges(
+      updateSubscriptionChargesStatus,
+    );
 
     const event = new DailyReconciliationRequestPinetEvent({
       payload: {

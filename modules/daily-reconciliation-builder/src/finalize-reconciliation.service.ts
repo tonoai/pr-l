@@ -14,6 +14,7 @@ import type { ReconciliationBuilderInterface } from '@pressingly-modules/daily-r
 import type { PinetContract } from '@pressingly-modules/event-contract/src/events/pinet-event';
 import * as dayjs from 'dayjs';
 import { DailyReconciliationStatus } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation.interface';
+import { DailyReconciliationSubscriptionChargeClearanceStatus } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-subscription-charge.interface';
 
 export interface FinalizeReconciliationServiceConfigs extends ResolveReconciliationServiceConfigs {
   key: Required<KeyInterface>;
@@ -106,6 +107,21 @@ export class FinalizeReconciliationService {
       });
     }
     if (protectedHeaderResult.status === DailyReconciliationResolveStatus.RECONCILED) {
+      // mark subscription charge as reconciled
+      // Can not re-export own data to mark, because it's not idempotent
+
+      const encryptedPartnerData = await this.requestService.download();
+      if (encryptedPartnerData) {
+        await this.dataService.loadPartnerData(encryptedPartnerData);
+
+        await this.reconciliationBuilder.upsertReconciliationSubscriptionCharges(
+          this.dataService.partnerData.subscriptionChargeDataset.map(data => ({
+            subscriptionChargesId: data.subscriptionChargeId,
+            clearanceStatus: DailyReconciliationSubscriptionChargeClearanceStatus.RECONCILED,
+          })),
+        );
+      }
+
       return this.reconciliationBuilder.upsertReconciliation({
         id: this.requestContractPayload.contractId,
         status: DailyReconciliationStatus.RECONCILED,
