@@ -92,6 +92,10 @@ export class ResolveReconciliationService {
       status: DailyReconciliationStatus.PROCESSING,
       contract: this.requestContract.data,
       issuedAt: dayjs.unix(this.requestContractPayload.iat).toDate(),
+      totalAmount: this.requestContractPayload.stats.totalSubscriptionChargeAmount ?? 0,
+      totalInterchangeFee: this.requestContractPayload.stats.totalInterchangeFee ?? 0,
+      // Todo: Need to update this field
+      currencyCode: 'USD',
     });
     try {
       await this.requestContract.transformAndValidate(DailyReconciliationContractPayload);
