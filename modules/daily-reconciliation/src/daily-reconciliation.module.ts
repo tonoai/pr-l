@@ -4,6 +4,7 @@ import { DailyReconciliationEntity } from '@pressingly-modules/daily-reconciliat
 import { DailyReconciliationMismatchEntity } from '@pressingly-modules/daily-reconciliation/src/entities/daily-reconciliation-mismatch.entity';
 import { DailyReconciliationResolutionEntity } from '@pressingly-modules/daily-reconciliation/src/entities/daily-reconciliation-resolution.entity';
 import { ReconciliationBuilder } from '@pressingly-modules/daily-reconciliation/src/builders/reconciliation-data.builder';
+import { DailyReconciliationSubscriptionChargesEntity } from '@pressingly-modules/daily-reconciliation/src/entities/daily-reconciliation-subscription-charges.entity';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { ReconciliationBuilder } from '@pressingly-modules/daily-reconciliation/
       DailyReconciliationEntity,
       DailyReconciliationMismatchEntity,
       DailyReconciliationResolutionEntity,
+      DailyReconciliationSubscriptionChargesEntity,
     ]),
   ],
   providers: [ReconciliationBuilder],

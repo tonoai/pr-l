@@ -14,6 +14,12 @@ import type { PinetContract } from '@pressingly-modules/event-contract/src/event
 import type { ReconciliationBuilderInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-builder.interface';
 import * as dayjs from 'dayjs';
 import { DailyReconciliationStatus } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation.interface';
+import type {
+  DailyReconciliationSubscriptionChargeClearanceStatus,
+  DailyReconciliationSubscriptionChargeInterface,
+} from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-subscription-charge.interface';
+import { DailyReconciliationSubscriptionChargeMismatchStatus } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-subscription-charge.interface';
+import type { DailyReconciliationMismatchStatus } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
 
 export interface ResolveReconciliationServiceConfigs {
   dataBuilder: DataBuilderInterface;
@@ -143,7 +149,10 @@ export class ResolveReconciliationService {
         // send contract with status resolved?
         // but partner data is not updated yet
         // and partner may not allow to update their data
-        return;
+
+        return this.signContractAndSendEvent({
+          status: DailyReconciliationResolveStatus.RECONCILED,
+        });
       } else {
         return this.signContractAndSendEvent({
           status: DailyReconciliationResolveStatus.UNRECONCILED,
@@ -175,6 +184,25 @@ export class ResolveReconciliationService {
       kid: this.key.kid,
     });
     await this.reconciliationBuilder.upsertReconciliation(reconciliationData);
+
+    const updateSubscriptionChargesStatus: DailyReconciliationSubscriptionChargeInterface[] = [];
+    const mismatchStatusMap = new Map<string, DailyReconciliationMismatchStatus>();
+    this.dataService.dataMismatch.subscriptionCharge.forEach(subscriptionCharge => {
+      mismatchStatusMap.set(subscriptionCharge.id!, subscriptionCharge.status!);
+    });
+    this.dataService.data.subscriptionChargeDataset.forEach(subscriptionCharge => {
+      updateSubscriptionChargesStatus.push({
+        subscriptionChargesId: subscriptionCharge.subscriptionChargeId,
+        mismatchStatus: mismatchStatusMap.get(subscriptionCharge.subscriptionChargeId)
+          ? DailyReconciliationSubscriptionChargeMismatchStatus.MISMATCHED
+          : DailyReconciliationSubscriptionChargeMismatchStatus.MATCHED,
+        clearanceStatus:
+          protectedHeader.status as unknown as DailyReconciliationSubscriptionChargeClearanceStatus,
+      });
+    });
+    await this.reconciliationBuilder.upsertReconciliationSubscriptionCharges(
+      updateSubscriptionChargesStatus,
+    );
 
     // init moneta event with contracts data
     const event = new DailyReconciliationResponsePinetEvent({

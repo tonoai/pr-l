@@ -2,6 +2,7 @@ import type { DailyReconciliationInterface } from '@pressingly-modules/daily-rec
 import type { DailyReconciliationMismatchInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-mismatch.interface';
 import type { DailyReconciliationResolutionInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-resolution.interface';
 import type { ReconciliationDataType } from '@pressingly-modules/daily-reconciliation-builder/src/types/reconciliation-dataset.interface';
+import type { DailyReconciliationSubscriptionChargeInterface } from '@pressingly-modules/daily-reconciliation-builder/src/types/daily-reconciliation-subscription-charge.interface';
 
 export interface ReconciliationBuilderInterface {
   upsertReconciliation(
@@ -15,4 +16,8 @@ export interface ReconciliationBuilderInterface {
   upsertReconciliationResolution(
     input: Partial<DailyReconciliationResolutionInterface>,
   ): Promise<DailyReconciliationResolutionInterface>;
+
+  upsertReconciliationSubscriptionCharges(
+    input: Partial<DailyReconciliationSubscriptionChargeInterface>[],
+  ): Promise<DailyReconciliationSubscriptionChargeInterface[]>;
 }
