@@ -19,6 +19,7 @@ export class DailyReconciliationMismatchEntity
   id!: string;
 
   @Column({ type: 'uuid' })
+  @Index('idx_daily_reconciliation_mismatches_reconciliation_id')
   reconciliationId!: string;
 
   @Column({ type: 'uuid', nullable: true })
@@ -56,6 +57,5 @@ export class DailyReconciliationMismatchEntity
     name: 'reconciliation_id',
     foreignKeyConstraintName: 'fk_daily_reconciliation_mismatches_reconciliation_id',
   })
-  @Index('idx_daily_reconciliation_mismatches_reconciliation_id')
   reconciliation!: DailyReconciliationEntity;
 }

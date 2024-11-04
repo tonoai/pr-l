@@ -203,4 +203,10 @@ export default class Column extends TableColumn {
 
     return this;
   }
+
+  setPrimaryOnly() {
+    this.isPrimary = true;
+
+    return this;
+  }
 }

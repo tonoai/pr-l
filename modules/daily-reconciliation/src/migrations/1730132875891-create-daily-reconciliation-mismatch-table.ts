@@ -35,7 +35,7 @@ export class CreateDailyReconciliationMismatchTable1730132875891 implements Migr
     await queryRunner.query(
       `ALTER TABLE ${this.tableName} ADD CONSTRAINT "fk_${this.tableName}_reconciliation_id" ` +
         `FOREIGN KEY ("reconciliation_id") REFERENCES "daily_reconciliations"("id") ` +
-        `ON DELETE NO ACTION ON UPDATE NO ACTION`,
+        `ON DELETE CASCADE`,
     );
   }
 

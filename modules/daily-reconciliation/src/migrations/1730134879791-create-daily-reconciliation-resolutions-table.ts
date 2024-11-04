@@ -9,7 +9,7 @@ export class CreateDailyReconciliationResolutionTable1730134879791 implements Mi
     await queryRunner.createTable(
       Schema.define(this.tableName, [
         Column.uuid('id').setPrimary(),
-        Column.uuid('reconciliation_mismatch_id'),
+        Column.uuid('reconciliation_mismatch_id').unique(),
         Column.jsonb('original_data').nullable(),
         Column.jsonb('modified_data').nullable(),
         Column.enum('action', ['modify', 'create', 'delete']),
@@ -24,16 +24,10 @@ export class CreateDailyReconciliationResolutionTable1730134879791 implements Mi
       `CREATE INDEX idx_${this.tableName}_reconciliation_mismatch_id ON ${this.tableName} (reconciliation_mismatch_id)`,
     );
 
-    // unique since one-to-one relationship
-    await queryRunner.query(
-      `ALTER TABLE ${this.tableName} ADD CONSTRAINT "unique_reconciliation_mismatch_id" UNIQUE ("reconciliation_mismatch_id")`,
-    );
-
-    // add missing foreign key constraint
     await queryRunner.query(
       `ALTER TABLE ${this.tableName} ADD CONSTRAINT "fk_${this.tableName}_reconciliation_mismatch_id" ` +
         `FOREIGN KEY ("reconciliation_mismatch_id") REFERENCES "daily_reconciliation_mismatches"("id") ` +
-        `ON DELETE NO ACTION ON UPDATE NO ACTION`,
+        ` ON DELETE CASCADE`,
     );
   }
 
